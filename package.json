@@ -1,0 +1,45 @@
+{
+  "name": "@zakkudo/open-api-tree",
+  "version": "0.0.4",
+  "description": "Make working with swagger/openapi api trees enjoyable.",
+  "keywords": [
+    "swagger",
+    "openapi",
+    "fetch",
+    "validation",
+    "jsonschema"
+  ],
+  "main": "build/index.js",
+  "files": [
+    "build/**/*"
+  ],
+  "repository": "github:zakkudo/open-api-tree",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.56",
+    "@babel/core": "^7.0.0-beta.56",
+    "@babel/preset-env": "^7.0.0-beta.56",
+    "babel-core": "^7.0.0-0",
+    "babel-jest": "^23.4.2",
+    "eslint": "^4.19.1",
+    "eslint-plugin-jasmine": "^2.10.1",
+    "eslint-plugin-node": "^7.0.1",
+    "jest": "^23.4.2",
+    "jest-cli": "^23.4.2",
+    "jsdoc": "^3.5.5",
+    "jsdoc-to-markdown": "^4.0.1",
+    "regenerator-runtime": "^0.12.1"
+  },
+  "dependencies": {
+    "@zakkudo/api-tree": "^0.0.4",
+    "openapi-schema-to-json-schema": "^2.1.0"
+  },
+  "scripts": {
+    "build": "scripts/build.sh",
+    "deploy": "scripts/deploy.sh",
+    "test": "scripts/test.sh",
+    "cover": "scripts/cover.sh",
+    "lint": "scripts/lint.sh",
+    "document": "scripts/document.sh"
+  }
+}
