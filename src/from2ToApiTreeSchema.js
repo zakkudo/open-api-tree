@@ -2,8 +2,6 @@
  * @private
  */
 function flatten(tree, definitions) {
-    const definitions = schema.definitions || {};
-
     if (Array.isArray(tree)) {
         return tree.map((t) => flatten(t, definitions));
     } else if (Object(tree) === tree) {
@@ -30,11 +28,9 @@ function ensureTree(root, pathname) {
     const parts = pathname.split('/').filter((p) => p);
 
     return parts.reduce((node, p) => {
-        if (!node.hasOwnProperty(p)) {
-            node[p] = {};
-        }
+        node[p] = node[p] || {};
 
-        return node;
+        return node[p];
     }, root);
 }
 
@@ -42,7 +38,7 @@ function ensureTree(root, pathname) {
  * @private
  */
 function toJsonSchemaProperty(property) {
-    const {name, in, required, collectionFormat, schema, ...leftover} = property;
+    const {name, in: _in, required, collectionFormat, schema, ...leftover} = property;
 
     return Object.assign({}, leftover, schema)
 }
@@ -93,11 +89,14 @@ export default function from2ToApiTreeSchema(schema) {
     const {schemes, host, basePath, paths, definitions} = schema;
     const base = `${schemes[0]}://${host}${basePath}`;
 
-    const apiTreeSchema = Object.entries(flatten(paths, definitions)).reduce((root, [pathname, actions]) => {
+    return Object.entries(flatten(paths, definitions)).reduce((root, [pathname, actions]) => {
         const leaf = ensureTree(root, pathname);
+        console.log('ROOT', JSON.stringify(root, null, 4));
 
-        Object.entries(actions).reduce((root, entry) => {
+        Object.assign(leaf, Object.entries(actions).reduce((root, entry) => {
             return Object.assign({}, root, convertAction(pathname, entry));
-        }, {});
+        }, {}));
+
+        return root;
     }, {});
 }
