@@ -1,6 +1,6 @@
 {
   "name": "@zakkudo/open-api-tree",
-  "version": "0.0.4",
+  "version": "0.0.1",
   "description": "Make working with swagger/openapi api trees enjoyable.",
   "keywords": [
     "swagger",
@@ -31,8 +31,7 @@
     "regenerator-runtime": "^0.12.1"
   },
   "dependencies": {
-    "@zakkudo/api-tree": "^0.0.4",
-    "openapi-schema-to-json-schema": "^2.1.0"
+    "@zakkudo/api-tree": "^0.0.4"
   },
   "scripts": {
     "build": "scripts/build.sh",

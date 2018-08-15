@@ -1,5 +1,6 @@
 import OpenApiTree from '.';
-import ValidationError from './ValidationError';
+import fetch from '@zakkudo/fetch';
+import api from './api';
 
 jest.mock('@zakkudo/fetch');
 

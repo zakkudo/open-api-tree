@@ -1,6 +1,4 @@
-import ValidationError from './ValidationError';
-import fetch from '@zakkudo/api-tree';
-import toJsonSchema from 'openapi-schema-to-json-schema';
+import toApiTreeSchema from './toApiTreeSchema';
 
 /**
  * Make working with backend api trees enjoyable. Generate an
@@ -24,7 +22,7 @@ import toJsonSchema from 'openapi-schema-to-json-schema';
  * ```
  *
  * @example
- * import ApiTree from '@zakkudo/api-tree';
+ * import OpenApiTree from '@zakkudo/open-api-tree';
  *
  * const api = new ApiTree('https://backend', {
  *     users: {
@@ -93,9 +91,9 @@ import toJsonSchema from 'openapi-schema-to-json-schema';
  * @module OpenApiTree
  */
 export default class OpenApiTree {
-    constructor(baseUrl, tree, options = {}) {
-        this.baseUrl = baseUrl || '';
-        this.options = fromJS(options);
-        Object.assign(this, parse(this, tree));
+    constructor(schema, options) {
+        const baseUrl = schema.servers[0];
+
+        return new ApiTree(schema.servers[0], toApiTreeSchema(schema), options);
     }
 }
