@@ -21,11 +21,13 @@ function flatten(tree, definitions) {
     return tree;
 }
 
+const interpolationPattern = /^\{.+\}$/;
+
 /**
  * @private
  */
 function ensureTree(root, pathname) {
-    const parts = pathname.split('/').filter((p) => p);
+    const parts = pathname.split('/').filter((p) => p && !p.match(interpolationPattern));
 
     return parts.reduce((node, p) => {
         node[p] = node[p] || {};
@@ -38,7 +40,7 @@ function ensureTree(root, pathname) {
  * @private
  */
 function toJsonSchemaProperty(property) {
-    const {name, in: _in, required, collectionFormat, schema, ...leftover} = property;
+    const {name, additionalProperties, in: _in, required, collectionFormat, schema, ...leftover} = property;
 
     return Object.assign({}, leftover, schema)
 }
@@ -47,20 +49,27 @@ function toJsonSchemaProperty(property) {
  * @private
  */
 function convertAction(pathname, [method, configuration]) {
+    const normalizedPathName = pathname.replace(/\{(.+?)\}/, (match, capture) => {
+        return `:${capture}`;
+    });
     const schema = {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        title: configuration.operationId,
-        description: configuration.description,
-        type: 'object',
         body: {
-            type: 'object',
-            properties: {},
-            required: []
-        },
-        params: {
+            $schema: "http://json-schema.org/draft-07/schema#",
+            title: configuration.operationId,
+            description: configuration.description,
             type: 'object',
             properties: {},
             required: [],
+            additionalProperties: false,
+        },
+        params: {
+            $schema: "http://json-schema.org/draft-07/schema#",
+            title: configuration.operationId,
+            description: configuration.description,
+            type: 'object',
+            properties: {},
+            required: [],
+            additionalProperties: false,
         },
     };
     const parameters = configuration.parameters || [];
@@ -76,7 +85,7 @@ function convertAction(pathname, [method, configuration]) {
     });
 
     return [
-        pathname,
+        normalizedPathName,
         {method: method.toUpperCase()},
         schema,
     ];
@@ -91,11 +100,10 @@ export default function from2ToApiTreeSchema(schema) {
 
     return Object.entries(flatten(paths, definitions)).reduce((root, [pathname, actions]) => {
         const leaf = ensureTree(root, pathname);
-        console.log('ROOT', JSON.stringify(root, null, 4));
 
-        Object.assign(leaf, Object.entries(actions).reduce((root, entry) => {
-            return Object.assign({}, root, convertAction(pathname, entry));
-        }, {}));
+        Object.entries(actions).forEach((entry) => {
+            leaf[entry[0]] = convertAction(pathname, entry);
+        });
 
         return root;
     }, {});
