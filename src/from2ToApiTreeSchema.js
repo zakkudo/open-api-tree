@@ -48,24 +48,51 @@ function toJsonSchemaProperty(property) {
 /**
  * @private
  */
+class PathnameTemplate {
+    /**
+     * @private
+     */
+    constructor(pathname) {
+        const signature = this.signature = [];
+
+        this.pathname = pathname.replace(/\{(.+?)\}/g, (match, capture) => {
+            signature.push(capture);
+
+            return `:${capture}`;
+        });
+    }
+
+    /**
+     * @private
+     */
+    toString() {
+        return this.pathname;
+    }
+
+    /**
+     * @private
+     */
+    toJSON() {
+        return this.toString();
+    }
+}
+
+/**
+ * @private
+ */
 function convertAction(pathname, [method, configuration]) {
-    const normalizedPathName = pathname.replace(/\{(.+?)\}/, (match, capture) => {
-        return `:${capture}`;
-    });
     const schema = {
+        $schema: "http://json-schema.org/draft-07/schema#",
+        title: configuration.operationId,
+        description: configuration.description,
+        type: 'object',
         body: {
-            $schema: "http://json-schema.org/draft-07/schema#",
-            title: configuration.operationId,
-            description: configuration.description,
             type: 'object',
             properties: {},
             required: [],
             additionalProperties: false,
         },
         params: {
-            $schema: "http://json-schema.org/draft-07/schema#",
-            title: configuration.operationId,
-            description: configuration.description,
             type: 'object',
             properties: {},
             required: [],
@@ -85,10 +112,14 @@ function convertAction(pathname, [method, configuration]) {
     });
 
     return [
-        normalizedPathName,
+        new PathnameTemplate(pathname),
         {method: method.toUpperCase()},
-        schema,
+        JSON.parse(JSON.stringify(schema)),
     ];
+}
+
+function shouldOverload(data) {
+    return Array.isArray(data) && data[0] instanceof  PathnameTemplate;
 }
 
 /**
@@ -102,7 +133,18 @@ export default function from2ToApiTreeSchema(schema) {
         const leaf = ensureTree(root, pathname);
 
         Object.entries(actions).forEach((entry) => {
-            leaf[entry[0]] = convertAction(pathname, entry);
+            const method = entry[0];
+            const action = convertAction(pathname, entry)
+
+            if (leaf.hasOwnProperty(method)) {
+                if (shouldOverload(leaf[method])) {
+                    leaf[method] = [leaf[method], action];
+                } else {
+                    leaf[method].push(action);
+                }
+            } else {
+                leaf[method] = action;
+            }
         });
 
         return root;
