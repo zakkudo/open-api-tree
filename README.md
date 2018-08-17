@@ -1,6 +1,6 @@
-<a name="module_ApiTree"></a>
+<a name="module_OpenApiTree"></a>
 
-## ApiTree
+## OpenApiTree
 Make working with backend api trees enjoyable. Generate an
 easy to use api tree that includes format checking using
 [JSON Schema](http://json-schema.org/) for the body and params
@@ -23,89 +23,128 @@ yarn add @zakkudo/api-tree
 
 **Example**  
 ```js
-import ApiTree from '@zakkudo/api-tree';
+import OpenApiTree from '@zakkudo/open-api-tree';
 
-const api = new ApiTree('https://backend', {
-    users: {
-        query: ['/v1/users'],
-        post: ['/v1/users', {method: 'POST'}, {
-             body: {
-                 type: 'object',
-                 required: ['first_name', 'last_name'],
-                 properties: {
-                      first_name: {
-                          type: 'string'
-                      },
-                      last_name: {
-                          type: 'string'
-                      },
-                 },
-             }
-        }],
-        get: ['/v2/users/:userId', {}, {
-             params: {
-                 type: 'object',
-                 required: ['userId'],
-                 properties: {
-                      userId: {
-                          type: 'string',
-                          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
-                      },
-                 },
-             }
-        }]
+const swaggerConfig = {
+  "swagger": "2.0",
+  "host": "petstore.swagger.io",
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/pets": {
+      "get": {
+        "operationId": "findPets",
+        "parameters": [
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "tags to filter by",
+            "required": false,
+            "type": "array",
+            "collectionFormat": "csv",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "maximum number of results to return",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+      },
+      "post": {
+        "description": "Creates a new pet in the store.  Duplicates are allowed",
+        "operationId": "addPet",
+        "parameters": [
+          {
+            "name": "pet",
+            "in": "body",
+            "description": "Pet to add to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewPet"
+            }
+          }
+        ],
+      }
+    },
+    "/pets/{id}": {
+      "get": {
+        "description": "Returns a user based on a single ID, if the user does not have access to the pet",
+        "operationId": "find pet by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of pet to fetch",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+      },
+      "delete": {
+        "description": "deletes a single pet based on the ID supplied",
+        "operationId": "deletePet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of pet to delete",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+      }
     }
-}, {
+  },
+  "definitions": {
+    "Pet": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/NewPet"
+        },
+        {
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      ]
+    },
+    "NewPet": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        }
+      }
+    },
+  }
+}
+
+const api = new OpenApiTree(swaggerConfig, {
     headers: {
          'X-AUTH-TOKEN': '1234'
     }
 });
-
-//Set headers after the fact
-api.options.headers['X-AUTH-TOKEN'] = '5678';
-
-//Get 10 users
-api.users.query({params: {limit: 10}}).then((users) => {
-     console.log(users); // [{id: ...}, ...]
-});
-
-//Create a user
-api.users.post({first_name: 'John', last_name: 'Doe'}).then((response) => {
-     console.log(response); // {id: 'ff599c67-1cac-4167-927e-49c02c93625f', first_name: 'John', last_name: 'Doe'}
-});
-
-// Try using a valid id
-api.users.get({params: {userId: 'ff599c67-1cac-4167-927e-49c02c93625f'}}).then((user) => {
-     console.log(user); // {id: 'ff599c67-1cac-4167-927e-49c02c93625f', first_name: 'john', last_name: 'doe'}
-})
-
-// Try fetching without an id
-api.users.get().catch((reason) => {
-     console.log(reason); // "params: should have required property 'userId'
-})
-
-// Try using an invalidly formatted id
-api.usrs.get({params: {userId: 'invalid format'}}).catch((reason) => {
-     console.log(reason); // "params.userId: should match pattern \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\""
-});
 ```
-
-* [ApiTree](#module_ApiTree)
-    * [module.exports](#exp_module_ApiTree--module.exports) ⏏
-        * [new module.exports(baseUrl, tree, options)](#new_module_ApiTree--module.exports_new)
-
-<a name="exp_module_ApiTree--module.exports"></a>
-
-### module.exports ⏏
-**Kind**: Exported class  
-<a name="new_module_ApiTree--module.exports_new"></a>
-
-#### new module.exports(baseUrl, tree, options)
-**Returns**: <code>Object</code> - The generated api tree  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| baseUrl | <code>String</code> | The url to prefix with all paths |
-| tree | <code>\*</code> | The configuration tree for the apis. Accepts a deeply nested set of objects where array are interpreted to be of the form `[path, options, schema]`. Thos array are converted into api fetching functions. |
-| options | <code>Object</code> | Options that will be the default base init for fetch operations. The same as those used for `@zakkudo/fetch` |
-

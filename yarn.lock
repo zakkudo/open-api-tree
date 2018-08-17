@@ -523,9 +523,9 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@zakkudo/api-tree@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@zakkudo/api-tree/-/api-tree-0.0.4.tgz#7c317b3603dccadf5d5f0fa21cef42f5ee0d6e42"
+"@zakkudo/api-tree@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@zakkudo/api-tree/-/api-tree-0.0.5.tgz#7eb5094fc5822fa970848cb01e22da344a914534"
   dependencies:
     "@zakkudo/fetch" "^0.0.3"
     ajv "^6.5.2"
@@ -1362,10 +1362,6 @@ decamelize@^1.0.0, decamelize@^1.1.1:
 decode-uri-component@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
-
-deep-equal@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.0.1.tgz#f5d260292b660e084eff4cdbc9f08ad3247448b5"
 
 deep-extend@^0.6.0, deep-extend@~0.6.0:
   version "0.6.0"
@@ -3382,12 +3378,6 @@ onetime@^2.0.0:
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-2.0.1.tgz#067428230fd67443b2794b22bba528b6867962d4"
   dependencies:
     mimic-fn "^1.0.0"
-
-openapi-schema-to-json-schema@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/openapi-schema-to-json-schema/-/openapi-schema-to-json-schema-2.1.0.tgz#6d8371c23a3230ab3dc50add1d4068402361a169"
-  dependencies:
-    deep-equal "^1.0.1"
 
 optimist@^0.6.1:
   version "0.6.1"
