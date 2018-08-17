@@ -48,38 +48,6 @@ function toJsonSchemaProperty(property) {
 /**
  * @private
  */
-class PathnameTemplate {
-    /**
-     * @private
-     */
-    constructor(pathname) {
-        const signature = this.signature = [];
-
-        this.pathname = pathname.replace(/\{(.+?)\}/g, (match, capture) => {
-            signature.push(capture);
-
-            return `:${capture}`;
-        });
-    }
-
-    /**
-     * @private
-     */
-    toString() {
-        return this.pathname;
-    }
-
-    /**
-     * @private
-     */
-    toJSON() {
-        return this.toString();
-    }
-}
-
-/**
- * @private
- */
 function convertAction(pathname, [method, configuration]) {
     const schema = {
         $schema: "http://json-schema.org/draft-07/schema#",
@@ -112,14 +80,14 @@ function convertAction(pathname, [method, configuration]) {
     });
 
     return [
-        new PathnameTemplate(pathname),
+        pathname,
         {method: method.toUpperCase()},
         JSON.parse(JSON.stringify(schema)),
     ];
 }
 
-function shouldOverload(data) {
-    return Array.isArray(data) && data[0] instanceof  PathnameTemplate;
+function isOverload(data) {
+    return Array.isArray(data) && Array.isArray(data[0]);
 }
 
 /**
@@ -137,7 +105,7 @@ export default function from2ToApiTreeSchema(schema) {
             const action = convertAction(pathname, entry)
 
             if (leaf.hasOwnProperty(method)) {
-                if (shouldOverload(leaf[method])) {
+                if (isOverload(leaf[method])) {
                     leaf[method] = [leaf[method], action];
                 } else {
                     leaf[method].push(action);
