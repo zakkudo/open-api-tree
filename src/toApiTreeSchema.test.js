@@ -156,6 +156,55 @@ describe('toApiTreeSchema', () => {
                 }
             });
         });
+
+        it('converts swagger api with no parameters', () => {
+            expect(toApiTreeSchema({
+                "swagger": "2.0",
+                "host": "petstore.swagger.io",
+                "basePath": "/api",
+                "schemes": [
+                    "http"
+                ],
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "operationId": "findPets"
+                        }
+                    }
+                }
+            })).toEqual({
+                base: 'http://petstore.swagger.io/api',
+                tree: {
+                    "pets": {
+                        "get": [
+                            "/pets",
+                            {
+                                "method": "GET"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    },
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
     });
 
     describe('openapi.3.0.0 schema', () => {
