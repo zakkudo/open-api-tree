@@ -24,14 +24,20 @@ describe('OpenApiTree', () => {
             });
         });
 
-        fit('can\'t pass params that don\'t match schema', () => {
+        it('can\'t pass params that don\'t match schema', () => {
             const api = new OpenApiTree(swaggerExample);
 
             return api.pets.get({params: {id: '1234'}}).then((response) => {
                 throw new Error('Should not be reachable');
             }).catch((reason) => {
                 expect(fetch.mock.calls).toEqual([]);
-                expect(reason).toEqual(new ValidationError());
+                expect(reason).toEqual(new ValidationError(
+                    'http://petstore.swagger.io/api/pets/:id',
+                    [{
+                        dataPath: '.params.id',
+                        message: 'should be integer',
+                    }]
+                ));
             });
         });
     });

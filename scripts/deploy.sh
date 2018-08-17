@@ -6,4 +6,7 @@ yarn build
 yarn document
 yarn cover
 
-yarn publish --access public
+cp package.json build/package.json
+cp README.md build/README.md
+
+yarn publish --access public --no-git-tag-version --cwd build
