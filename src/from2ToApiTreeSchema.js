@@ -101,7 +101,7 @@ function isOverload(data) {
  * @private
  */
 export default function from2ToApiTreeSchema(schema) {
-    const {schemes, host, basePath, paths, definitions} = schema;
+    const {schemes, host, basePath, paths, definitions = {}} = schema;
     const base = `${schemes[0]}://${host}${basePath}`;
 
     return Object.entries(flatten(paths, definitions)).reduce((root, [pathname, actions]) => {

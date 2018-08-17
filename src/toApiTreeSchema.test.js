@@ -13,16 +13,263 @@ describe('toApiTreeSchema', () => {
         fetch.mockReturnValue(Promise.resolve('test response'));
     });
 
-    it('converts swagger api', () => {
-        console.log(JSON.stringify(toApiTreeSchema(swaggerExample), null, 4));
-        expect(toApiTreeSchema(swaggerExample)).toEqual(swaggerExpected);
+    describe('swagger.2.0 schema', () => {
+        it('converts swagger api', () => {
+            expect(toApiTreeSchema(swaggerExample)).toEqual(swaggerExpected);
+        });
+
+        it('ignores missing $refs', () => {
+            expect(toApiTreeSchema({
+                "swagger": "2.0",
+                "host": "petstore.swagger.io",
+                "basePath": "/api",
+                "schemes": [
+                    "http"
+                ],
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "operationId": "findPets",
+                            "parameters": [
+                                {
+                                    "name": "tags",
+                                    "in": "query",
+                                    "description": "tags to filter by",
+                                    "required": false,
+                                    "collectionFormat": "csv",
+                                    "schema": {
+                                        "$ref": "#/definitions/Pet",
+                                    }
+                                },
+                            ],
+                        }
+                    }
+                }
+            })).toEqual({
+				"pets": {
+					"get": [
+						"/pets",
+						{
+							"method": "GET"
+						},
+						{
+							"$schema": "http://json-schema.org/draft-07/schema#",
+							"title": "findPets",
+							"type": "object",
+							"body": {
+								"type": "object",
+								"properties": {},
+								"required": [],
+								"additionalProperties": false
+							},
+							"params": {
+								"type": "object",
+								"properties": {
+									"tags": {
+										"description": "tags to filter by",
+										"$ref": "#/definitions/Pet"
+									}
+								},
+								"required": [],
+								"additionalProperties": false
+							}
+						}
+					]
+				}
+            });
+        });
+
+        it('converts swagger api with no definitions', () => {
+            expect(toApiTreeSchema({
+                "swagger": "2.0",
+                "host": "petstore.swagger.io",
+                "basePath": "/api",
+                "schemes": [
+                    "http"
+                ],
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "operationId": "findPets",
+                            "parameters": [
+                                {
+                                    "name": "tags",
+                                    "in": "query",
+                                    "description": "tags to filter by",
+                                    "required": false,
+                                    "type": "array",
+                                    "collectionFormat": "csv",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                            ],
+                        }
+                    }
+                }
+            })).toEqual({
+                "pets": {
+                    "get": [
+                        "/pets",
+                        {
+                            "method": "GET"
+                        },
+                        {
+                            "$schema": "http://json-schema.org/draft-07/schema#",
+                            "title": "findPets",
+                            "type": "object",
+                            "body": {
+                                "type": "object",
+                                "properties": {},
+                                "required": [],
+                                "additionalProperties": false
+                            },
+                            "params": {
+                                "type": "object",
+                                "properties": {
+                                    "tags": {
+                                        "description": "tags to filter by",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "required": [],
+                                "additionalProperties": false
+                            }
+                        }
+                    ]
+                }
+            });
+        });
     });
 
-    it('converts openapi api', () => {
-        expect(toApiTreeSchema(openApiExample)).toEqual(openApiExpected);
+    describe('openapi.3.0.0 schema', () => {
+        it('converts openapi api', () => {
+            expect(toApiTreeSchema(openApiExample)).toEqual(openApiExpected);
+        });
+
+        it('ignores missing $refs', () => {
+            expect(toApiTreeSchema({
+                "openapi": "3.0.0",
+                "servers": [
+                    {
+                        "url": "http://petstore.swagger.io/api"
+                    }
+                ],
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "operationId": "findPets",
+                            "parameters": [
+                                {
+                                    "name": "tags",
+                                    "in": "query",
+                                    "description": "tags to filter by",
+                                    "required": false,
+                                    "style": "form",
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Pet"
+                                    }
+                                },
+                            ],
+                        }
+                    }
+                }
+            })).toEqual({
+                "pets": {
+                    "get": [
+                        "/pets",
+                        {
+                            "method": "GET"
+                        },
+                        {
+                            "$schema": "http://json-schema.org/draft-07/schema#",
+                            "title": "findPets",
+                            "type": "object",
+                            "params": {
+                                "type": "object",
+                                "properties": {
+                                    "tags": {
+                                        "description": "tags to filter by",
+                                        "$ref": "#/components/schemas/Pet",
+                                    }
+                                },
+                                "required": [],
+                                "additionalProperties": false
+                            }
+                        }
+                    ]
+                }
+            });
+        });
+
+        it('converts open api with no definitions', () => {
+            expect(toApiTreeSchema({
+                "openapi": "3.0.0",
+                "servers": [
+                    {
+                        "url": "http://petstore.swagger.io/api"
+                    }
+                ],
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "operationId": "findPets",
+                            "parameters": [
+                                {
+                                    "name": "tags",
+                                    "in": "query",
+                                    "description": "tags to filter by",
+                                    "required": false,
+                                    "style": "form",
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                            ],
+                        }
+                    }
+                }
+            })).toEqual({
+                "pets": {
+                    "get": [
+                        "/pets",
+                        {
+                            "method": "GET"
+                        },
+                        {
+                            "$schema": "http://json-schema.org/draft-07/schema#",
+                            "title": "findPets",
+                            "type": "object",
+                            "params": {
+                                "type": "object",
+                                "properties": {
+                                    "tags": {
+                                        "description": "tags to filter by",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "required": [],
+                                "additionalProperties": false
+                            }
+                        }
+                    ]
+                }
+            });
+        });
     });
 
-    it('throws an exception for an unknown type', () => {
-        expect(() => toApiTreeSchema({})).toThrow(new Error('Unsupported schema'));
+    describe('unsupported schema', () => {
+        it('throws an exception for an unknown type', () => {
+            expect(() => toApiTreeSchema({})).toThrow(new Error('Unsupported schema'));
+        });
     });
 });
