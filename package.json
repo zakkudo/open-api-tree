@@ -21,6 +21,7 @@
     "@babel/preset-env": "^7.0.0-beta.56",
     "babel-core": "^7.0.0-0",
     "babel-jest": "^23.4.2",
+    "coveralls": "^3.0.2",
     "eslint": "^4.19.1",
     "eslint-plugin-jasmine": "^2.10.1",
     "eslint-plugin-node": "^7.0.1",
@@ -31,14 +32,15 @@
     "regenerator-runtime": "^0.12.1"
   },
   "dependencies": {
-    "@zakkudo/api-tree": "^0.0.11"
+    "@zakkudo/api-tree": "^0.0.12"
   },
   "scripts": {
     "build": "scripts/build.sh",
-    "deploy": "scripts/deploy.sh",
-    "test": "scripts/test.sh",
+    "clean": "scripts/clean.sh",
     "cover": "scripts/cover.sh",
+    "deploy": "scripts/deploy.sh",
+    "document": "scripts/document.sh",
     "lint": "scripts/lint.sh",
-    "document": "scripts/document.sh"
+    "test": "scripts/test.sh"
   }
 }
