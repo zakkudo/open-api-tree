@@ -27,7 +27,7 @@ Install with:
 yarn add @zakkudo/open-api-tree
 ```
 
-**Example**  
+**Example** *(Parse a scema dynamically during runtime)*  
 ```js
 import OpenApiTree from '@zakkudo/open-api-tree';
 import fetch from '@zakkudo/fetch';
@@ -51,4 +51,37 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
     // DELETE http://petstore.swagger.io/api/pets/1
     api.pets.delete({params: {id: 1}});
 });
+```
+**Example** *(Preparse a schema)*  
+```js
+//In webpack.conf.js////////////////////////////
+import ApiTree from '@zakkudo/api-tree';
+
+const toApiTreeSchema = require('@zakkudo/open-api-tree/toApiTreeSchema');
+const execSync = require('child_process').execSync;
+const configuration = JSON.parse(String(execSync('curl https://petstore.swagger.io/v2/swagger.json'));
+
+new DefinePlugin({
+    __API_CONFIGURATION__: JSON.stringify(toApiTreeSchema(configuration))
+});
+
+//In src/api.js////////////////////////////////
+import ApiTree from '@zakkudo/api-tree';
+
+export default new ApiTree(__API_CONFIGURATION__);
+
+//In src/index.js////////////////////////////
+import api from './api';
+
+// GET http://petstore.swagger.io/api/pets?limit=10
+api.pets.get({params: {limit: 10}})
+
+// GET http://petstore.swagger.io/api/pets/1
+api.pets.get({params: {id: 1}})
+
+// POST http://petstore.swagger.io/api/pets
+api.pets.post({})
+
+// DELETE http://petstore.swagger.io/api/pets/1
+api.pets.delete({params: {id: 1}});
 ```
