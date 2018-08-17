@@ -14,4 +14,12 @@ describe('toApiTreeSchema', () => {
     it('converts swagger api', () => {
         console.log(JSON.stringify(toApiTreeSchema(swaggerExample), null, 4));
     });
+
+    it('converts openapi api', () => {
+        console.log(JSON.stringify(toApiTreeSchema(openApiExample), null, 4));
+    });
+
+    it('throws an exception for an unknown type', () => {
+        expect(() => toApiTreeSchema({})).toThrow(new Error('Unsupported schema'));
+    });
 });
