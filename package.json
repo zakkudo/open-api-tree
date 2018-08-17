@@ -31,7 +31,7 @@
     "regenerator-runtime": "^0.12.1"
   },
   "dependencies": {
-    "@zakkudo/api-tree": "^0.0.9"
+    "@zakkudo/api-tree": "^0.0.11"
   },
   "scripts": {
     "build": "scripts/build.sh",
