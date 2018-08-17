@@ -27,7 +27,7 @@ Install with:
 yarn add @zakkudo/open-api-tree
 ```
 
-**Example** *(Parse a scema dynamically during runtime)*  
+**Example** *(Parse a scema dynamically during runtime to reduce the size of the application)*  
 ```js
 import OpenApiTree from '@zakkudo/open-api-tree';
 import fetch from '@zakkudo/fetch';
@@ -52,7 +52,7 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
     api.pets.delete({params: {id: 1}});
 });
 ```
-**Example** *(Preparse a schema)*  
+**Example** *(Preparse a schema to make the definition stable for a build)*  
 ```js
 //In webpack.conf.js////////////////////////////
 import ApiTree from '@zakkudo/api-tree';
@@ -84,4 +84,19 @@ api.pets.post({})
 
 // DELETE http://petstore.swagger.io/api/pets/1
 api.pets.delete({params: {id: 1}});
+```
+**Example** *(Validation error failure example)*  
+```js
+import ValidationError from '@zakkudo/api-tree/ValidationError';
+
+api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
+    if (reason instanceof ValidationError) {
+        console.log(reason)
+        // ValidationError: [
+        //     "<http://petstore.swagger.io/api/pets/:id> .params.id: should be integer"
+        // ]
+    } else {
+        throw reason;
+    }
+});
 ```

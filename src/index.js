@@ -28,7 +28,7 @@ import ApiTree from '@zakkudo/api-tree';
  * yarn add @zakkudo/open-api-tree
  * ```
  *
- * @example <caption>Parse a scema dynamically during runtime</caption>
+ * @example <caption>Parse a scema dynamically during runtime to reduce the size of the application</caption>
  * import OpenApiTree from '@zakkudo/open-api-tree';
  * import fetch from '@zakkudo/fetch';
  *
@@ -52,7 +52,7 @@ import ApiTree from '@zakkudo/api-tree';
  *     api.pets.delete({params: {id: 1}});
  * });
  *
- * @example <caption>Preparse a schema</caption>
+ * @example <caption>Preparse a schema to make the definition stable for a build</caption>
  * //In webpack.conf.js////////////////////////////
  * import ApiTree from '@zakkudo/api-tree';
  *
@@ -83,6 +83,20 @@ import ApiTree from '@zakkudo/api-tree';
  *
  * // DELETE http://petstore.swagger.io/api/pets/1
  * api.pets.delete({params: {id: 1}});
+ *
+ * @example <caption>Validation error failure example</caption>
+ * import ValidationError from '@zakkudo/api-tree/ValidationError';
+ *
+ * api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
+ *     if (reason instanceof ValidationError) {
+ *         console.log(reason)
+ *         // ValidationError: [
+ *         //     "<http://petstore.swagger.io/api/pets/:id> .params.id: should be integer"
+ *         // ]
+ *     } else {
+ *         throw reason;
+ *     }
+ * });
  *
  * @module OpenApiTree
  */
