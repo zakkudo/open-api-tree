@@ -15,7 +15,10 @@ describe('toApiTreeSchema', () => {
 
     describe('swagger.2.0 schema', () => {
         it('converts swagger api', () => {
-            expect(toApiTreeSchema(swaggerExample)).toEqual(swaggerExpected);
+            expect(toApiTreeSchema(swaggerExample)).toEqual({
+                base: 'http://petstore.swagger.io/api',
+                tree: swaggerExpected
+            });
         });
 
         it('ignores missing $refs', () => {
@@ -46,36 +49,41 @@ describe('toApiTreeSchema', () => {
                     }
                 }
             })).toEqual({
-				"pets": {
-					"get": [
-						"/pets",
-						{
-							"method": "GET"
-						},
-						{
-							"$schema": "http://json-schema.org/draft-07/schema#",
-							"title": "findPets",
-							"type": "object",
-							"body": {
-								"type": "object",
-								"properties": {},
-								"required": [],
-								"additionalProperties": false
-							},
-							"params": {
-								"type": "object",
-								"properties": {
-									"tags": {
-										"description": "tags to filter by",
-										"$ref": "#/definitions/Pet"
-									}
-								},
-								"required": [],
-								"additionalProperties": false
-							}
-						}
-					]
-				}
+                base: 'http://petstore.swagger.io/api',
+                tree: {
+                    "pets": {
+                        "get": [
+                            "/pets",
+                            {
+                                "method": "GET"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    },
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tags": {
+                                                "description": "tags to filter by",
+                                                "$ref": "#/definitions/Pet"
+                                            }
+                                        },
+                                        "required": [],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
             });
         });
 
@@ -108,38 +116,43 @@ describe('toApiTreeSchema', () => {
                     }
                 }
             })).toEqual({
-                "pets": {
-                    "get": [
-                        "/pets",
-                        {
-                            "method": "GET"
-                        },
-                        {
-                            "$schema": "http://json-schema.org/draft-07/schema#",
-                            "title": "findPets",
-                            "type": "object",
-                            "body": {
-                                "type": "object",
-                                "properties": {},
-                                "required": [],
-                                "additionalProperties": false
+                base: 'http://petstore.swagger.io/api',
+                tree: {
+                    "pets": {
+                        "get": [
+                            "/pets",
+                            {
+                                "method": "GET"
                             },
-                            "params": {
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
                                 "type": "object",
                                 "properties": {
-                                    "tags": {
-                                        "description": "tags to filter by",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
+                                    "body": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    },
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tags": {
+                                                "description": "tags to filter by",
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "required": [],
+                                        "additionalProperties": false
                                     }
-                                },
-                                "required": [],
-                                "additionalProperties": false
+                                }
                             }
-                        }
-                    ]
+                        ]
+                    }
                 }
             });
         });
@@ -147,7 +160,10 @@ describe('toApiTreeSchema', () => {
 
     describe('openapi.3.0.0 schema', () => {
         it('converts openapi api', () => {
-            expect(toApiTreeSchema(openApiExample)).toEqual(openApiExpected);
+            expect(toApiTreeSchema(openApiExample)).toEqual({
+                base: 'http://petstore.swagger.io/api',
+                tree: openApiExpected
+            });
         });
 
         it('ignores missing $refs', () => {
@@ -178,29 +194,34 @@ describe('toApiTreeSchema', () => {
                     }
                 }
             })).toEqual({
-                "pets": {
-                    "get": [
-                        "/pets",
-                        {
-                            "method": "GET"
-                        },
-                        {
-                            "$schema": "http://json-schema.org/draft-07/schema#",
-                            "title": "findPets",
-                            "type": "object",
-                            "params": {
+                base: 'http://petstore.swagger.io/api',
+                tree: {
+                    "pets": {
+                        "get": [
+                            "/pets",
+                            {
+                                "method": "GET"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
                                 "type": "object",
                                 "properties": {
-                                    "tags": {
-                                        "description": "tags to filter by",
-                                        "$ref": "#/components/schemas/Pet",
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tags": {
+                                                "description": "tags to filter by",
+                                                "$ref": "#/components/schemas/Pet",
+                                            }
+                                        },
+                                        "required": [],
+                                        "additionalProperties": false
                                     }
-                                },
-                                "required": [],
-                                "additionalProperties": false
+                                }
                             }
-                        }
-                    ]
+                        ]
+                    }
                 }
             });
         });
@@ -236,32 +257,37 @@ describe('toApiTreeSchema', () => {
                     }
                 }
             })).toEqual({
-                "pets": {
-                    "get": [
-                        "/pets",
-                        {
-                            "method": "GET"
-                        },
-                        {
-                            "$schema": "http://json-schema.org/draft-07/schema#",
-                            "title": "findPets",
-                            "type": "object",
-                            "params": {
+                base: 'http://petstore.swagger.io/api',
+                tree: {
+                    "pets": {
+                        "get": [
+                            "/pets",
+                            {
+                                "method": "GET"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
                                 "type": "object",
                                 "properties": {
-                                    "tags": {
-                                        "description": "tags to filter by",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tags": {
+                                                "description": "tags to filter by",
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "required": [],
+                                        "additionalProperties": false
                                     }
-                                },
-                                "required": [],
-                                "additionalProperties": false
+                                }
                             }
-                        }
-                    ]
+                        ]
+                    }
                 }
             });
         });

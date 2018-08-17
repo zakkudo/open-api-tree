@@ -61,18 +61,20 @@ function convertAction(pathname, [method, configuration]) {
         title: configuration.operationId,
         description: configuration.description,
         type: 'object',
-        body: {
-            type: 'object',
-            properties: {},
-            required: [],
-            additionalProperties: false,
-        },
-        params: {
-            type: 'object',
-            properties: {},
-            required: [],
-            additionalProperties: false,
-        },
+        properties: {
+            body: {
+                type: 'object',
+                properties: {},
+                required: [],
+                additionalProperties: false,
+            },
+            params: {
+                type: 'object',
+                properties: {},
+                required: [],
+                additionalProperties: false,
+            },
+        }
     };
     const parameters = configuration.parameters || [];
 
@@ -80,10 +82,10 @@ function convertAction(pathname, [method, configuration]) {
         const key = (p.in === 'body') && 'body' || 'params';
 
         if (p.required) {
-            schema[key].required.push(p.name);
+            schema.properties[key].required.push(p.name);
         }
 
-        schema[key].properties[p.name] = toJsonSchemaProperty(p);
+        schema.properties[key].properties[p.name] = toJsonSchemaProperty(p);
     });
 
     return [
@@ -104,24 +106,27 @@ export default function from2ToApiTreeSchema(schema) {
     const {schemes, host, basePath, paths, definitions = {}} = schema;
     const base = `${schemes[0]}://${host}${basePath}`;
 
-    return Object.entries(flatten(paths, definitions)).reduce((root, [pathname, actions]) => {
-        const leaf = ensureTree(root, pathname);
+    return {
+        base,
+        tree: Object.entries(flatten(paths, definitions)).reduce((root, [pathname, actions]) => {
+            const leaf = ensureTree(root, pathname);
 
-        Object.entries(actions).forEach((entry) => {
-            const method = entry[0];
-            const action = convertAction(pathname, entry)
+            Object.entries(actions).forEach((entry) => {
+                const method = entry[0];
+                const action = convertAction(pathname, entry)
 
-            if (leaf.hasOwnProperty(method)) {
-                if (isOverload(leaf[method])) {
-                    leaf[method].push(action);
+                if (leaf.hasOwnProperty(method)) {
+                    if (isOverload(leaf[method])) {
+                        leaf[method].push(action);
+                    } else {
+                        leaf[method] = [leaf[method], action];
+                    }
                 } else {
-                    leaf[method] = [leaf[method], action];
+                    leaf[method] = action;
                 }
-            } else {
-                leaf[method] = action;
-            }
-        });
+            });
 
-        return root;
-    }, {});
+            return root;
+        }, {})
+    };
 }

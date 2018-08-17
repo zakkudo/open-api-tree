@@ -1,4 +1,5 @@
 import toApiTreeSchema from './toApiTreeSchema';
+import ApiTree from '@zakkudo/api-tree';
 
 /**
  * Make working with backend api trees enjoyable from [swagger]{@link https://swagger.io/}/[openapi]{@link https://www.openapis.org/}. Generate an
@@ -87,8 +88,8 @@ import toApiTreeSchema from './toApiTreeSchema';
  */
 export default class OpenApiTree {
     constructor(schema, options) {
-        const baseUrl = schema.servers[0];
+        const {base, tree} = toApiTreeSchema(schema);
 
-        return new ApiTree(schema.servers[0], toApiTreeSchema(schema), options);
+        return new ApiTree(base, tree, options);
     }
 }

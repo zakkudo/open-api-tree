@@ -45,17 +45,19 @@ function convertAction(pathname, [method, configuration]) {
         title: configuration.operationId,
         description: configuration.description,
         type: 'object',
-        body: {
-            type: 'object',
-            properties: {},
-            required: [],
-            additionalProperties: false,
-        },
-        params: {
-            type: 'object',
-            properties: {},
-            required: [],
-            additionalProperties: false,
+        properties: {
+            body: {
+                type: 'object',
+                properties: {},
+                required: [],
+                additionalProperties: false,
+            },
+            params: {
+                type: 'object',
+                properties: {},
+                required: [],
+                additionalProperties: false,
+            },
         },
     };
     const parameters = configuration.parameters || [];
@@ -63,10 +65,10 @@ function convertAction(pathname, [method, configuration]) {
 
     parameters.forEach((p) => {
         if (p.required) {
-            schema.params.required.push(p.name);
+            schema.properties.params.required.push(p.name);
         }
 
-        schema.params.properties[p.name] = Object.assign({description: p.description}, p.schema);
+        schema.properties.params.properties[p.name] = Object.assign({description: p.description}, p.schema);
     });
 
     const content = requestBody.content || {};
@@ -77,7 +79,7 @@ function convertAction(pathname, [method, configuration]) {
 
         return c;
     });
-    schema.body = bodySchemas[0]
+    schema.properties.body = bodySchemas[0]
 
     return [
         pathname,
@@ -95,26 +97,29 @@ function isOverload(data) {
  */
 export default function from3ToApiTreeSchema(schema) {
     const {schemes, host, basePath, paths, components = {}} = schema;
-    const base = schema.servers;
+    const base = schema.servers[0].url;
 
-    return Object.entries(flatten(paths, components.schemas || {})).reduce((root, [pathname, actions]) => {
-        const leaf = ensureTree(root, pathname);
+    return {
+        base,
+        tree: Object.entries(flatten(paths, components.schemas || {})).reduce((root, [pathname, actions]) => {
+            const leaf = ensureTree(root, pathname);
 
-        Object.entries(actions).forEach((entry) => {
-            const method = entry[0];
-            const action = convertAction(pathname, entry)
+            Object.entries(actions).forEach((entry) => {
+                const method = entry[0];
+                const action = convertAction(pathname, entry)
 
-            if (leaf.hasOwnProperty(method)) {
-                if (isOverload(leaf[method])) {
-                    leaf[method].push(action);
+                if (leaf.hasOwnProperty(method)) {
+                    if (isOverload(leaf[method])) {
+                        leaf[method].push(action);
+                    } else {
+                        leaf[method] = [leaf[method], action];
+                    }
                 } else {
-                    leaf[method] = [leaf[method], action];
+                    leaf[method] = action;
                 }
-            } else {
-                leaf[method] = action;
-            }
-        });
+            });
 
-        return root;
-    }, {});
+            return root;
+        }, {})
+    };
 }
