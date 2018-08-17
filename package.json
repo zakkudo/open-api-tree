@@ -9,9 +9,9 @@
     "validation",
     "jsonschema"
   ],
-  "main": "build/index.js",
+  "main": "index.js",
   "files": [
-    "build/**/*"
+    "*"
   ],
   "repository": "github:zakkudo/open-api-tree",
   "license": "BSD-3-Clause",
