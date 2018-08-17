@@ -22,6 +22,13 @@ function flatten(tree, definitions) {
 }
 
 const interpolationPattern = /^\{.+\}$/;
+const interpolationReplacePattern = /\{(.+?)\}/g;
+
+function convertPathname(pathname) {
+    return pathname.replace(interpolationReplacePattern, (match, capture) => {
+        return `:${capture}`;
+    });
+}
 
 /**
  * @private
@@ -80,7 +87,7 @@ function convertAction(pathname, [method, configuration]) {
     });
 
     return [
-        pathname,
+        convertPathname(pathname),
         {method: method.toUpperCase()},
         JSON.parse(JSON.stringify(schema)),
     ];
@@ -106,9 +113,9 @@ export default function from2ToApiTreeSchema(schema) {
 
             if (leaf.hasOwnProperty(method)) {
                 if (isOverload(leaf[method])) {
-                    leaf[method] = [leaf[method], action];
-                } else {
                     leaf[method].push(action);
+                } else {
+                    leaf[method] = [leaf[method], action];
                 }
             } else {
                 leaf[method] = action;

@@ -154,6 +154,12 @@
           }
         }
       }
+    },
+    "/pets/{otherId}": {
+      "get": {
+        "description": "extra overload test",
+        "operationId": "find pet by id in another format"
+      }
     }
   },
   "definitions": {

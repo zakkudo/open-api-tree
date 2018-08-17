@@ -184,6 +184,34 @@
           }
         }
       }
+    },
+    "/pets/{otherId}": {
+      "get": {
+        "description": "extra overload test",
+        "operationId": "find pet by id in another format"
+      }
+    },
+    "/pets/overloadedRequestBodys": {
+      "post": {
+        "description": "extra overload test",
+        "operationId": "find pet by id in another format",
+        "requestBody": {
+          "description": "Pet to add to the store",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPet"
+              }
+            },
+            "text/plain": {
+                "schema": {
+                    "type": "string"
+                }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
