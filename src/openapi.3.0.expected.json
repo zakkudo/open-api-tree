@@ -35,7 +35,7 @@
 				}
 			],
 			[
-				"/pets/{id}",
+				"/pets/:id",
 				{
 					"method": "GET"
 				},
@@ -63,7 +63,7 @@
 				}
 			],
 			[
-				"/pets/{otherId}",
+				"/pets/:otherId",
 				{
 					"method": "GET"
 				},
@@ -118,7 +118,7 @@
 			}
 		],
 		"delete": [
-			"/pets/{id}",
+			"/pets/:id",
 			{
 				"method": "DELETE"
 			},

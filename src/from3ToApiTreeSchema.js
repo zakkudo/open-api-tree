@@ -22,6 +22,13 @@ function flatten(tree, definitions) {
 }
 
 const interpolationPattern = /^\{.+\}$/;
+const interpolationReplacePattern = /\{(.+?)\}/g;
+
+function convertPathname(pathname) {
+    return pathname.replace(interpolationReplacePattern, (match, capture) => {
+        return `:${capture}`;
+    });
+}
 
 /**
  * @private
@@ -82,7 +89,7 @@ function convertAction(pathname, [method, configuration]) {
     schema.properties.body = bodySchemas[0]
 
     return [
-        pathname,
+        convertPathname(pathname),
         {method: method.toUpperCase()},
         JSON.parse(JSON.stringify(schema)),
     ];
