@@ -6,6 +6,7 @@ import swaggerExample from './swagger.2.0.example';
 
 class NotReachableError extends Error {
     constructor() {
+        super();
         this.message = 'This code should not be reachable';
     }
 }
@@ -30,7 +31,7 @@ describe('OpenApiTree', () => {
             it('can do a successful minimal network call', () => {
                 const api = new OpenApiTree(swaggerExample);
 
-                return api.pets.get().then((response) => {
+                return api.pets.get().then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets",
                         {"method": "GET"},
@@ -46,7 +47,7 @@ describe('OpenApiTree', () => {
                         "limit": 10,
                         "tags": ["dog", "cat"],
                     },
-                }).then((response) => {
+                }).then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets",
                         {
@@ -67,7 +68,7 @@ describe('OpenApiTree', () => {
                     "params": {
                         "test-invalid-param": true
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -88,7 +89,7 @@ describe('OpenApiTree', () => {
 
                 return api.pets.get({
                     "params": {"id": 1234}
-                }).then((response) => {
+                }).then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets/:id",
                         {
@@ -107,7 +108,7 @@ describe('OpenApiTree', () => {
                         "id": 1234,
                         "test-invalid-param": true
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -128,7 +129,7 @@ describe('OpenApiTree', () => {
                     "params": {
                         "id": "1234",
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -151,7 +152,7 @@ describe('OpenApiTree', () => {
                     "body": {
                         "name": "test name"
                     }
-                }).then((response) => {
+                }).then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets",
                         {
@@ -171,7 +172,7 @@ describe('OpenApiTree', () => {
                     "params": {
                         "id": 1234,
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -192,7 +193,7 @@ describe('OpenApiTree', () => {
                     "body": {
                         "name": 1234,
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -213,7 +214,7 @@ describe('OpenApiTree', () => {
 
                 return api.pets.delete({
                     "params": {"id": 1234}
-                }).then((response) => {
+                }).then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets/:id",
                         {
@@ -232,7 +233,7 @@ describe('OpenApiTree', () => {
                         "id": 1234,
                         "test-invalid-param": true
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -253,7 +254,7 @@ describe('OpenApiTree', () => {
                     "params": {
                         "id": "1234",
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -281,7 +282,7 @@ describe('OpenApiTree', () => {
             it('can do a successful minimal network call', () => {
                 const api = new OpenApiTree(openApiExample);
 
-                return api.pets.get().then((response) => {
+                return api.pets.get().then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets",
                         {"method": "GET"},
@@ -297,7 +298,7 @@ describe('OpenApiTree', () => {
                         "limit": 10,
                         "tags": ["dog", "cat"],
                     },
-                }).then((response) => {
+                }).then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets",
                         {
@@ -318,7 +319,7 @@ describe('OpenApiTree', () => {
                     "params": {
                         "test-invalid-param": true
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -339,7 +340,7 @@ describe('OpenApiTree', () => {
 
                 return api.pets.get({
                     "params": {"id": 1234}
-                }).then((response) => {
+                }).then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets/:id",
                         {
@@ -358,7 +359,7 @@ describe('OpenApiTree', () => {
                         "id": 1234,
                         "test-invalid-param": true
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -379,7 +380,7 @@ describe('OpenApiTree', () => {
                     "params": {
                         "id": "1234",
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -402,7 +403,7 @@ describe('OpenApiTree', () => {
                     "body": {
                         "name": "test name"
                     }
-                }).then((response) => {
+                }).then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets",
                         {
@@ -422,7 +423,7 @@ describe('OpenApiTree', () => {
                     "params": {
                         "id": 1234,
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -443,7 +444,7 @@ describe('OpenApiTree', () => {
                     "body": {
                         "name": 1234,
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -464,7 +465,7 @@ describe('OpenApiTree', () => {
 
                 return api.pets.delete({
                     "params": {"id": 1234}
-                }).then((response) => {
+                }).then(() => {
                     expect(fetch.mock.calls).toEqual([[
                         "http://petstore.swagger.io/api/pets/:id",
                         {
@@ -483,7 +484,7 @@ describe('OpenApiTree', () => {
                         "id": 1234,
                         "test-invalid-param": true
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);
@@ -504,7 +505,7 @@ describe('OpenApiTree', () => {
                     "params": {
                         "id": "1234",
                     },
-                }).then((response) => {
+                }).then(() => {
                     throw new NotReachableError();
                 }).catch((reason) => {
                     expect(fetch.mock.calls).toEqual([]);

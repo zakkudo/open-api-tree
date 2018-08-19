@@ -2,7 +2,8 @@ import toApiTreeSchema from './toApiTreeSchema';
 import ApiTree from '@zakkudo/api-tree';
 
 /**
- * Make working with backend api trees enjoyable from [swagger]{@link https://swagger.io/}/[openapi]{@link https://www.openapis.org/}.
+ * Make working with backend api trees enjoyable from
+ * [swagger]{@link https://swagger.io/}/[openapi]{@link https://www.openapis.org/}.
  *
  * [![Build Status](https://travis-ci.org/zakkudo/open-api-tree.svg?branch=master)](https://travis-ci.org/zakkudo/open-api-tree)
  * [![Coverage Status](https://coveralls.io/repos/github/zakkudo/open-api-tree/badge.svg?branch=master)](https://coveralls.io/github/zakkudo/open-api-tree?branch=master)
@@ -11,7 +12,8 @@ import ApiTree from '@zakkudo/api-tree';
  * easy to use api tree that includes format checking using
  * [JSON Schema]{@link http://json-schema.org/} for the body and params
  * with only a single configuration object. Network calls are executed using
- * a thin convenience wrapper around [fetch]{@link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch}.
+ * a thin convenience wrapper around
+ * [fetch]{@link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch}.
  *
  * Why use this?
  *

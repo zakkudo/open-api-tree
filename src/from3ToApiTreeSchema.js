@@ -75,13 +75,15 @@ function convertAction(pathname, [method, configuration]) {
             schema.properties.params.required.push(p.name);
         }
 
-        schema.properties.params.properties[p.name] = Object.assign({description: p.description}, p.schema);
+        schema.properties.params.properties[p.name] = Object.assign({
+            description: p.description
+        }, p.schema);
     });
 
     const content = requestBody.content || {};
     const bodySchemas = Object.values(content).map((c) => c.schema).map((c) => {
         if (c.properties) {
-            return Object.assign({}, c, {type: 'object'});;
+            return Object.assign({}, c, {type: 'object'});
         }
 
         return c;
@@ -105,12 +107,13 @@ function isOverload(data) {
  * @private
  */
 export default function from3ToApiTreeSchema(schema) {
-    const {schemes, host, basePath, paths, components = {}} = schema;
+    const {paths, components = {}} = schema;
     const base = schema.servers[0].url;
 
     return {
         base,
-        tree: Object.entries(flatten(paths, components.schemas || {})).reduce((root, [pathname, actions]) => {
+        tree: Object.entries(flatten(paths, components.schemas || {}))
+        .reduce((root, [pathname, actions]) => {
             const leaf = ensureTree(root, pathname);
 
             Object.entries(actions).forEach((entry) => {

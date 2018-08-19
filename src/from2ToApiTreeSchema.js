@@ -47,7 +47,15 @@ function ensureTree(root, pathname) {
  * @private
  */
 function toJsonSchemaProperty(property) {
-    const {name, additionalProperties, in: _in, required, collectionFormat, schema, ...leftover} = property;
+    const {
+        name,
+        additionalProperties,
+        in: _in,
+        required,
+        collectionFormat,
+        schema,
+        ...leftover
+    } = property;
 
     return Object.assign({}, leftover, schema)
 }

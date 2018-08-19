@@ -1,7 +1,8 @@
 <a name="module_OpenApiTree"></a>
 
 ## OpenApiTree
-Make working with backend api trees enjoyable from [swagger](https://swagger.io/)/[openapi](https://www.openapis.org/).
+Make working with backend api trees enjoyable from
+[swagger](https://swagger.io/)/[openapi](https://www.openapis.org/).
 
 [![Build Status](https://travis-ci.org/zakkudo/open-api-tree.svg?branch=master)](https://travis-ci.org/zakkudo/open-api-tree)
 [![Coverage Status](https://coveralls.io/repos/github/zakkudo/open-api-tree/badge.svg?branch=master)](https://coveralls.io/github/zakkudo/open-api-tree?branch=master)
@@ -10,7 +11,8 @@ Generate an
 easy to use api tree that includes format checking using
 [JSON Schema](http://json-schema.org/) for the body and params
 with only a single configuration object. Network calls are executed using
-a thin convenience wrapper around [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch).
+a thin convenience wrapper around
+[fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch).
 
 Why use this?
 
