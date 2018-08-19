@@ -14,12 +14,19 @@ with only a single configuration object. Network calls are executed using
 a thin convenience wrapper around
 [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch).
 
+This library is a thin wrapper for `@zakkudo/api-tree` if you need the same
+functionality but don't use Swagger.
+
 Why use this?
 
+- Consistancy with simplicity
 - No longer need to maintain a set of functions for accessing apis
-- Automatic validation of the body/params against the swagger definition
-- Support for swagger 2.0 definitions and open api 3.0 definitions
-- Network calls are mostly the same as fetch
+- Automatic validation of the body/params against the Swagger definition
+- Support for Swagger 2.0 definitions and OpenApi 3.0 definitions
+- Leverages native fetch, adding a thin convenience layer.
+- Share authorization handling using a single location that can be updated dynamically
+- Share a single transform for the responses and request in a location that can be updated dynamically
+- Supports overloading the tree methods so that you can use the same method for getting a single item or a collection of items
 
 The api tree is based off of the path name
 - `[POST] /users` -> `api.users.post({body: data})`
@@ -34,7 +41,7 @@ Install with:
 yarn add @zakkudo/open-api-tree
 ```
 
-**Example** *(Parse a scema dynamically during runtime to reduce the size of the application)*  
+**Example** *(Parse a schema dynamically during runtime to reduce the size of the application)*  
 ```js
 import OpenApiTree from '@zakkudo/open-api-tree';
 import fetch from '@zakkudo/fetch';
