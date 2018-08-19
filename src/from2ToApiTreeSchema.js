@@ -79,13 +79,15 @@ function convertAction(pathname, [method, configuration]) {
     const parameters = configuration.parameters || [];
 
     parameters.forEach((p) => {
-        const key = (p.in === 'body') && 'body' || 'params';
+        if (p.in === 'body') {
+            schema.properties.body = toJsonSchemaProperty(p);
+        } else {
+            if (p.required) {
+                schema.properties.params.required.push(p.name);
+            }
 
-        if (p.required) {
-            schema.properties[key].required.push(p.name);
+            schema.properties.params.properties[p.name] = toJsonSchemaProperty(p);
         }
-
-        schema.properties[key].properties[p.name] = toJsonSchemaProperty(p);
     });
 
     return [

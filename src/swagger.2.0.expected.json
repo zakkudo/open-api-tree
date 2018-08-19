@@ -121,27 +121,19 @@
                 "properties": {
                     "body": {
                         "type": "object",
-                        "properties": {
-                            "pet": {
-                                "description": "Pet to add to the store",
-                                "type": "object",
-                                "required": [
-                                    "name"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "tag": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        },
+                        "description": "Pet to add to the store",
+                        "type": "object",
                         "required": [
-                            "pet"
+                            "name"
                         ],
-                        "additionalProperties": false
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "tag": {
+                                "type": "string"
+                            }
+                        }
                     },
                     "params": {
                         "type": "object",

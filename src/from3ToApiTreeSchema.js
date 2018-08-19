@@ -86,7 +86,9 @@ function convertAction(pathname, [method, configuration]) {
 
         return c;
     });
-    schema.properties.body = bodySchemas[0]
+    if (bodySchemas.length) {
+        schema.properties.body = bodySchemas[0]
+    }
 
     return [
         convertPathname(pathname),

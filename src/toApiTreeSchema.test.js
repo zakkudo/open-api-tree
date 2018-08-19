@@ -266,8 +266,14 @@ describe('toApiTreeSchema', () => {
                                         },
                                         "required": [],
                                         "additionalProperties": false
-                                    }
-                                }
+                                    },
+                                    "body": {
+                                        "additionalProperties": false,
+                                        "properties": {},
+                                        "required": [],
+                                        "type": "object",
+                                    },
+                                },
                             }
                         ]
                     }
@@ -332,6 +338,12 @@ describe('toApiTreeSchema', () => {
                                         },
                                         "required": [],
                                         "additionalProperties": false
+                                    },
+                                    "body": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false,
                                     }
                                 }
                             }
