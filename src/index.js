@@ -66,7 +66,7 @@ import ApiTree from '@zakkudo/api-tree';
  *     api.pets.delete({params: {id: 1}});
  * });
  *
- * @example <caption>Preparse a schema to make the definition stable for a build</caption>
+ * @example <caption>Pre-parse a schema to make the definition stable for a build</caption>
  * //In webpack.conf.js////////////////////////////
  * import ApiTree from '@zakkudo/api-tree';
  *
@@ -99,7 +99,7 @@ import ApiTree from '@zakkudo/api-tree';
  * api.pets.delete({params: {id: 1}});
  *
  * @example <caption>Validation error failure example</caption>
- * import ValidationError from '@zakkudo/api-tree/ValidationError';
+ * import ValidationError from '@zakkudo/open-api-tree/ValidationError';
  *
  * api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
  *     if (reason instanceof ValidationError) {
@@ -110,6 +110,38 @@ import ApiTree from '@zakkudo/api-tree';
  *     } else {
  *         throw reason;
  *     }
+ * });
+ *
+ * @example <caption>Handling errors</caption>
+ * import OpenApiTree from '@zakkudo/open-api-tree';
+ * import fetch from '@zakkudo/fetch';
+ * import ValidationError from '@zakkudo/open-api-tree/ValidationError';
+ * import HttpError from '@zakkudo/open-api-tree/HttpError';
+ *
+ * fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
+ *     const api = new OpenApiTree(configuration, {
+ *         headers: {
+ *              'X-AUTH-TOKEN': '1234'
+ *         }
+ *     });
+ *
+ *     // GET http://petstore.swagger.io/api/pets?limit=notanumber
+ *     api.pets.get({params: {limit: 'notanumber'}}).catch((reason) => {
+ *       if (reason instanceof ValidationError) {
+ *           console.log(reason); // .params.limit: should be integer
+ *       }
+ *     });
+ *
+ *     // GET http://petstore.swagger.io/api/pets/1
+ *     api.pets.get({params: {id: 1}}).catch((reason) => {
+ *       if (reason instanceof HttpError) {
+ *           if (reason.status === 401) {
+ *              login();
+ *           }
+ *       }
+ *
+ *       return reason;
+ *     });
  * });
  *
  * @module OpenApiTree
@@ -131,14 +163,16 @@ export default class OpenApiTree {
      * the url. The url must not already have params.  The serialization uses the
      * same rules as used by `@zakkudo/query-string`
      * @param {Function|Array<Function>} [options.transformRequest] - Transforms for the request body.
-     * When not supplied, it by default json serializes the contents if not a simple string.
-     * @param {Function|Array<Function>} [options.transformResponse] - Transform the response.
+     * When not supplied, it by default json serializes the contents if not a simple string. Also accepts
+     * promises as return values for asynchronous work.
+     * @param {Function|Array<Function>} [options.transformResponse] - Transform the response.  Also accepts
+     * promises as return values for asynchronous work.
      * @param {Function|Array<Function>} [options.transformError] - Transform the
      * error response. Return the error to keep the error state.  Return a non
      * `Error` to recover from the error in the promise chain.  A good place to place a login
      * handler when recieving a `401` from a backend endpoint or redirect to another page.
      * It's preferable to never throw an error here which will break the error transform chain in
-     * a non-graceful way.
+     * a non-graceful way. Also accepts promises as return values for asynchronous work.
      * @return {Object} The generated api tree
      */
     constructor(schema, options) {

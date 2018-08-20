@@ -113,7 +113,7 @@ function isOverload(data) {
  * @private
  */
 export default function from2ToApiTreeSchema(schema) {
-    const {schemes, host, basePath, paths, definitions = {}} = schema;
+    const {schemes = ['https'], host, basePath, paths, definitions = {}} = schema;
     const base = `${schemes[0]}://${host}${basePath}`;
 
     return {

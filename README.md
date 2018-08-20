@@ -66,7 +66,7 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
     api.pets.delete({params: {id: 1}});
 });
 ```
-**Example** *(Preparse a schema to make the definition stable for a build)*  
+**Example** *(Pre-parse a schema to make the definition stable for a build)*  
 ```js
 //In webpack.conf.js////////////////////////////
 import ApiTree from '@zakkudo/api-tree';
@@ -101,7 +101,7 @@ api.pets.delete({params: {id: 1}});
 ```
 **Example** *(Validation error failure example)*  
 ```js
-import ValidationError from '@zakkudo/api-tree/ValidationError';
+import ValidationError from '@zakkudo/open-api-tree/ValidationError';
 
 api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
     if (reason instanceof ValidationError) {
@@ -112,6 +112,39 @@ api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
     } else {
         throw reason;
     }
+});
+```
+**Example** *(Handling errors)*  
+```js
+import OpenApiTree from '@zakkudo/open-api-tree';
+import fetch from '@zakkudo/fetch';
+import ValidationError from '@zakkudo/open-api-tree/ValidationError';
+import HttpError from '@zakkudo/open-api-tree/HttpError';
+
+fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
+    const api = new OpenApiTree(configuration, {
+        headers: {
+             'X-AUTH-TOKEN': '1234'
+        }
+    });
+
+    // GET http://petstore.swagger.io/api/pets?limit=notanumber
+    api.pets.get({params: {limit: 'notanumber'}}).catch((reason) => {
+      if (reason instanceof ValidationError) {
+          console.log(reason); // .params.limit: should be integer
+      }
+    });
+
+    // GET http://petstore.swagger.io/api/pets/1
+    api.pets.get({params: {id: 1}}).catch((reason) => {
+      if (reason instanceof HttpError) {
+          if (reason.status === 401) {
+             login();
+          }
+      }
+
+      return reason;
+    });
 });
 ```
 
@@ -141,7 +174,7 @@ api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
 | [options.referrer] | <code>String</code> | <code>&#x27;client&#x27;</code> | no-referrer, client |
 | [options.body] | <code>String</code> \| <code>Object</code> |  | `JSON.stringify` is automatically run for non-string types |
 | [options.params] | <code>String</code> \| <code>Object</code> |  | Query params to be appended to the url. The url must not already have params.  The serialization uses the same rules as used by `@zakkudo/query-string` |
-| [options.transformRequest] | <code>function</code> \| <code>Array.&lt;function()&gt;</code> |  | Transforms for the request body. When not supplied, it by default json serializes the contents if not a simple string. |
-| [options.transformResponse] | <code>function</code> \| <code>Array.&lt;function()&gt;</code> |  | Transform the response. |
-| [options.transformError] | <code>function</code> \| <code>Array.&lt;function()&gt;</code> |  | Transform the error response. Return the error to keep the error state.  Return a non `Error` to recover from the error in the promise chain.  A good place to place a login handler when recieving a `401` from a backend endpoint or redirect to another page. It's preferable to never throw an error here which will break the error transform chain in a non-graceful way. |
+| [options.transformRequest] | <code>function</code> \| <code>Array.&lt;function()&gt;</code> |  | Transforms for the request body. When not supplied, it by default json serializes the contents if not a simple string. Also accepts promises as return values for asynchronous work. |
+| [options.transformResponse] | <code>function</code> \| <code>Array.&lt;function()&gt;</code> |  | Transform the response.  Also accepts promises as return values for asynchronous work. |
+| [options.transformError] | <code>function</code> \| <code>Array.&lt;function()&gt;</code> |  | Transform the error response. Return the error to keep the error state.  Return a non `Error` to recover from the error in the promise chain.  A good place to place a login handler when recieving a `401` from a backend endpoint or redirect to another page. It's preferable to never throw an error here which will break the error transform chain in a non-graceful way. Also accepts promises as return values for asynchronous work. |
 
