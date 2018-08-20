@@ -127,7 +127,9 @@ export default class OpenApiTree {
      * @param {String} [options.redirect='follow'] - manual, follow, error
      * @param {String} [options.referrer='client'] - no-referrer, client
      * @param {String|Object} [options.body] - `JSON.stringify` is automatically run for non-string types
-     * @param {String} [options.params] - Query params to be appended to the url. The url must not already have params.
+     * @param {String|Object} [options.params] - Query params to be appended to
+     * the url. The url must not already have params.  The serialization uses the
+     * same rules as used by `@zakkudo/query-string`
      * @param {Function|Array<Function>} [options.transformRequest] - Transforms for the request body.
      * When not supplied, it by default json serializes the contents if not a simple string.
      * @param {Function|Array<Function>} [options.transformResponse] - Transform the response.

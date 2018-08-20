@@ -140,7 +140,7 @@ api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
 | [options.redirect] | <code>String</code> | <code>&#x27;follow&#x27;</code> | manual, follow, error |
 | [options.referrer] | <code>String</code> | <code>&#x27;client&#x27;</code> | no-referrer, client |
 | [options.body] | <code>String</code> \| <code>Object</code> |  | `JSON.stringify` is automatically run for non-string types |
-| [options.params] | <code>String</code> |  | Query params to be appended to the url. The url must not already have params. |
+| [options.params] | <code>String</code> \| <code>Object</code> |  | Query params to be appended to the url. The url must not already have params.  The serialization uses the same rules as used by `@zakkudo/query-string` |
 | [options.transformRequest] | <code>function</code> \| <code>Array.&lt;function()&gt;</code> |  | Transforms for the request body. When not supplied, it by default json serializes the contents if not a simple string. |
 | [options.transformResponse] | <code>function</code> \| <code>Array.&lt;function()&gt;</code> |  | Transform the response. |
 | [options.transformError] | <code>function</code> \| <code>Array.&lt;function()&gt;</code> |  | Transform the error response. Return the error to keep the error state.  Return a non `Error` to recover from the error in the promise chain.  A good place to place a login handler when recieving a `401` from a backend endpoint or redirect to another page. It's preferable to never throw an error here which will break the error transform chain in a non-graceful way. |
