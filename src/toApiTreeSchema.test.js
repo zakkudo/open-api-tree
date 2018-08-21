@@ -87,6 +87,69 @@ describe('toApiTreeSchema', () => {
             });
         });
 
+        it('defaults scheme to https when missing', () => {
+            expect(toApiTreeSchema({
+                "swagger": "2.0",
+                "host": "petstore.swagger.io",
+                "basePath": "/api",
+                "paths": {
+                    "/pets": {
+                        "get": {
+                            "operationId": "findPets",
+                            "parameters": [
+                                {
+                                    "name": "tags",
+                                    "in": "query",
+                                    "description": "tags to filter by",
+                                    "required": false,
+                                    "collectionFormat": "csv",
+                                    "schema": {
+                                        "$ref": "#/definitions/Pet",
+                                    }
+                                },
+                            ],
+                        }
+                    }
+                }
+            })).toEqual({
+                base: 'https://petstore.swagger.io/api',
+                tree: {
+                    "pets": {
+                        "get": [
+                            "/pets",
+                            {
+                                "method": "GET"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    },
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tags": {
+                                                "description": "tags to filter by",
+                                                "$ref": "#/definitions/Pet"
+                                            }
+                                        },
+                                        "required": [],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
         it('converts swagger api with no definitions', () => {
             expect(toApiTreeSchema({
                 "swagger": "2.0",
