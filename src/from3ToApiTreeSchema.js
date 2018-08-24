@@ -81,6 +81,7 @@ function convertAction(pathname, [method, configuration]) {
     });
 
     const content = requestBody.content || {};
+    const contentTypes = Object.keys(content);
     const bodySchemas = Object.values(content).map((c) => c.schema).map((c) => {
         if (c.properties) {
             return Object.assign({}, c, {type: 'object'});
@@ -88,8 +89,11 @@ function convertAction(pathname, [method, configuration]) {
 
         return c;
     });
-    if (bodySchemas.length) {
-        schema.properties.body = bodySchemas[0]
+
+    if (contentTypes.length === 1 && contentTypes[0] === 'application/json') {
+        schema.properties.body = bodySchemas[0];
+    } else if (contentTypes.length > 0) {
+        schema.properties.body = {};
     }
 
     return [

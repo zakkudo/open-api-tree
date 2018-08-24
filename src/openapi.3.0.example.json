@@ -203,11 +203,6 @@
               "schema": {
                 "$ref": "#/components/schemas/NewPet"
               }
-            },
-            "text/plain": {
-                "schema": {
-                    "type": "string"
-                }
             }
           }
         }

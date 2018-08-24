@@ -43,6 +43,17 @@ function ensureTree(root, pathname) {
     }, root);
 }
 
+const basicTypes = new Set([
+    'string',
+    'number',
+    'float',
+    'integer',
+    'object',
+    'array',
+    'boolean',
+    'null',
+]);
+
 /**
  * @private
  */
@@ -53,11 +64,16 @@ function toJsonSchemaProperty(property) {
         in: _in,
         required,
         collectionFormat,
-        schema,
+        schema = {},
         ...leftover
     } = property;
+    const type = leftover.type || schema.type;
 
-    return Object.assign({}, leftover, schema)
+    if (!type || basicTypes.has(type)) {
+        return Object.assign({}, leftover, schema)
+    }
+
+    return {}; //For unknown types allow anything
 }
 
 /**
@@ -87,7 +103,7 @@ function convertAction(pathname, [method, configuration]) {
     const parameters = configuration.parameters || [];
 
     parameters.forEach((p) => {
-        if (p.in === 'body') {
+        if (p.in === 'body' || p.in === 'formData') {
             schema.properties.body = toJsonSchemaProperty(p);
         } else {
             if (p.required) {

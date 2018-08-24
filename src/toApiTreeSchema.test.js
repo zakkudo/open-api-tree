@@ -21,6 +21,59 @@ describe('toApiTreeSchema', () => {
             });
         });
 
+        it('handles a file up load gracefully', () => {
+            expect(toApiTreeSchema({
+                "swagger": "2.0",
+                "host": "petstore.swagger.io",
+                "basePath": "/api",
+                "schemes": [
+                    "http"
+                ],
+                "paths": {
+                    "/pets": {
+                        "post": {
+                            "operationId": "findPets",
+                            "parameters": [
+                                {
+                                    "name": "file",
+                                    "in": "formData",
+                                    "description": "file",
+                                    "required": true,
+                                    "type": "file",
+                                }
+                            ]
+                        },
+                    }
+                }
+            })).toEqual({
+                "base": "http://petstore.swagger.io/api",
+                "tree": {
+                    "pets": {
+                        "post": [
+                            "/pets",
+                            {
+                                "method": "POST"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
+                                "type": "object",
+                                "properties": {
+                                    "body": {},
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
         it('ignores missing $refs', () => {
             expect(toApiTreeSchema({
                 "swagger": "2.0",
@@ -407,6 +460,58 @@ describe('toApiTreeSchema', () => {
                                         "properties": {},
                                         "required": [],
                                         "additionalProperties": false,
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
+        it('handles a file up load gracefully', () => {
+            expect(toApiTreeSchema({
+                "openapi": "3.0.0",
+                "servers": [
+                    {
+                        "url": "http://petstore.swagger.io/api"
+                    }
+                ],
+                "paths": {
+                    "/pets": {
+                        "post": {
+                            "operationId": "uploadPetFile",
+                            "requestBody": {
+                                "content": {
+                                    "multipart/form-data": {
+                                        "schema": {
+                                        }
+                                    }
+                                }
+                            },
+                        }
+                    }
+                }
+            })).toEqual({
+                "base": "http://petstore.swagger.io/api",
+                "tree": {
+                    "pets": {
+                        "post": [
+                            "/pets",
+                            {
+                                "method": "POST"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "uploadPetFile",
+                                "type": "object",
+                                "properties": {
+                                    "body": {},
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
                                     }
                                 }
                             }
