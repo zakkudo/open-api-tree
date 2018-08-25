@@ -523,16 +523,16 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@zakkudo/api-tree@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@zakkudo/api-tree/-/api-tree-0.0.15.tgz#b2e854224ddf3aa2546ab1f8d779e39d2aace377"
+"@zakkudo/api-tree@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@zakkudo/api-tree/-/api-tree-0.0.16.tgz#dc449205c645c8c2ce7ed0ae6707752819fd8d72"
   dependencies:
-    "@zakkudo/fetch" "^0.0.7"
+    "@zakkudo/fetch" "^0.0.8"
     ajv "^6.5.2"
 
-"@zakkudo/fetch@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@zakkudo/fetch/-/fetch-0.0.7.tgz#2036e4422d04c8b63ae5666cf7974c43e6680ed2"
+"@zakkudo/fetch@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@zakkudo/fetch/-/fetch-0.0.8.tgz#61d48068c82b3575864b128db8bdf6433cc49741"
   dependencies:
     "@zakkudo/url" "^0.0.10"
     immutable "^3.8.2"
