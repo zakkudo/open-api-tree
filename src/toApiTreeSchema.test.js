@@ -18,7 +18,7 @@ describe('toApiTreeSchema', () => {
     describe('swagger 1.2 schema', () => {
         it('converts swagger api', () => {
             expect(toApiTreeSchema(swagger12Example)).toEqual({
-                base: 'http://petstore.swagger.com/api/store',
+                base: 'http://petstore.swagger.io/api',
                 tree: swagger12Expected
             });
         });

@@ -21,11 +21,7 @@ function flattenModelInheritance(models) {
         const subTypes = model.subTypes || [];
 
         subTypes.forEach((t) => {
-            if (!inherits[t]) {
-                inherits[t] = [k];
-            } else {
-                inherits[t].push(k);
-            }
+            inherits[t].push(k);
         });
 
         delete model.subTypes;
@@ -114,6 +110,9 @@ function toJsonSchemaProperty(property) {
         name,
         paramType,
         required,
+        id,
+        subTypes,
+        discriminator,
         ...leftover
     } = property;
     const type = leftover.type;

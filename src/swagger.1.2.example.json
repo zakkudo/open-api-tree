@@ -1,40 +1,37 @@
 {
 	"swaggerVersion": "1.2",
-	"basePath": "http://petstore.swagger.com/api",
-	"resourcePath": "/store",
+	"basePath": "http://petstore.swagger.io",
+	"resourcePath": "/api",
 	"apis": [
 		{
-			"path": "/store/order/{orderId}",
+			"path": "/api/pets/{id}",
 			"operations": [
 				{
 					"method": "GET",
-					"summary": "Find purchase order by ID",
-					"notes": "For valid response try integer IDs with value <= 5. Anything above 5 or nonintegers will generate API errors",
-					"type": "Order",
-					"nickname": "getOrderById",
-					"authorizations": {},
+					"summary": "Returns a user based on a single ID, if the user does not have access to the pet",
+					"nickname": "find pet by id",
 					"parameters": [
 						{
-							"name": "orderId",
-							"description": "ID of pet that needs to be fetched",
+							"name": "id",
+							"description": "ID of pet to fetch",
 							"required": true,
-							"type": "string",
+							"type": "integer",
+							"format": "int64",
 							"paramType": "path"
 						}
 					]
 				},
 				{
 					"method": "DELETE",
-					"summary": "Delete purchase order by ID",
-					"notes": "For valid response try integer IDs with value < 1000.  Anything above 1000 or nonintegers will generate API errors",
-					"type": "void",
-					"nickname": "deleteOrder",
+					"summary": "deletes a single pet based on the ID supplied",
+					"nickname": "deletePet",
 					"parameters": [
 						{
-							"name": "orderId",
+							"name": "id",
 							"description": "ID of the order that needs to be deleted",
 							"required": true,
-							"type": "string",
+							"type": "integer",
+							"format": "int64",
 							"paramType": "path"
 						}
 					]
@@ -42,33 +39,76 @@
 			]
 		},
 		{
-			"path": "/store/order",
+			"path": "/api/pets",
 			"operations": [
 				{
 					"method": "POST",
-					"summary": "Place an order for a pet",
-					"notes": "",
-					"type": "void",
-					"nickname": "placeOrder",
+					"summary": "Creates a new pet in the store.  Duplicates are allowed",
+					"nickname": "addPet",
 					"parameters": [
 						{
-							"name": "body",
-							"description": "order placed for purchasing the pet",
+							"name": "pet",
+							"description": "Pet to add ot the store",
 							"required": true,
-							"type": "Order",
+							"type": "Pet",
 							"paramType": "body"
 						}
+					]
+				},
+				{
+					"method": "GET",
+					"summary": "Returns all pets form the system",
+					"nickname": "findPets",
+					"parameters": [
+                        {
+                            "name": "tags",
+                            "paramType": "query",
+                            "description": "tags to filter by",
+                            "required": false,
+                            "type": "array",
+                            "collectionFormat": "csv",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "limit",
+                            "paramType": "query",
+                            "description": "maximum number of results to return",
+                            "required": false,
+                            "type": "integer",
+                            "format": "int32"
+                        }
 					]
 				}
 			]
 		},
+		{
+			"path": "/api/pets/{otherId}",
+			"operations": [
+				{
+					"method": "GET",
+					"summary": "Returns a user based on a single ID, if the user does not have access to the pet",
+					"nickname": "find pet by id",
+					"parameters": [
+						{
+							"name": "otherId",
+							"description": "ID of pet to fetch",
+							"required": true,
+							"type": "integer",
+							"format": "int64",
+							"paramType": "path"
+						}
+					]
+				}
+            ]
+        },
 		{
 			"path": "/store/pet/type",
 			"operations": [
 				{
 					"method": "POST",
 					"summary": "Add a pet",
-					"notes": "",
 					"type": "void",
 					"nickname": "createPet",
 					"parameters": [
@@ -89,7 +129,6 @@
 				{
 					"method": "POST",
 					"summary": "Add a pet",
-					"notes": "",
 					"type": "void",
 					"nickname": "createPet",
 					"parameters": [
@@ -144,7 +183,8 @@
             ],
             "properties": {
                 "id": {
-                    "type": "long"
+                    "type": "integer",
+                    "format": "long"
                 },
                 "type": {
                     "type": "string"
@@ -161,6 +201,20 @@
             "properties": {
                 "likesMilk": {
                     "type": "boolean"
+                }
+            }
+        },
+        "Pet": {
+            "id": "Pet",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
                 }
             }
         }
