@@ -23,6 +23,36 @@ describe('toApiTreeSchema', () => {
             });
         });
 
+        it('creates an empty base url when no basePath or resourcePath', () => {
+            expect(toApiTreeSchema({
+                "swaggerVersion": "1.2",
+            })).toEqual({
+                base: '',
+                tree: {},
+            });
+        });
+
+        it('removes trailing slash from base before concatenating with resourcePath', () => {
+            expect(toApiTreeSchema({
+                "swaggerVersion": "1.2",
+                "basePath": "http://petstore.swagger.io/",
+                "resourcePath": "/api"
+            })).toEqual({
+                base: 'http://petstore.swagger.io/api',
+                tree: {},
+            });
+        });
+
+        it('does nothing to trailing slash if no resourcePath', () => {
+            expect(toApiTreeSchema({
+                "swaggerVersion": "1.2",
+                "basePath": "http://petstore.swagger.io/",
+            })).toEqual({
+                base: 'http://petstore.swagger.io',
+                tree: {},
+            });
+        });
+
         it('handles no resource path gracefully', () => {
             expect(toApiTreeSchema({
                 "swaggerVersion": "1.2",
@@ -278,6 +308,7 @@ describe('toApiTreeSchema', () => {
                                         "paramType": "query",
                                         "description": "tags to filter by",
                                         "required": false,
+                                        "allowMultiple": false,
                                         "type": "array",
                                         "items": {
                                             "type": "string"

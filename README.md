@@ -22,7 +22,7 @@ Why use this?
 - Consistancy with simplicity
 - No longer need to maintain a set of functions for accessing apis
 - Automatic validation of the body/params against the Swagger definition
-- Support for Swagger 2.0 definitions and OpenApi 3.0 definitions
+- Support for Swagger 1.2, Swagger 2.0 and OpenApi 3.0.x definitions
 - Leverages native fetch, adding a thin convenience layer.
 - Share authorization handling using a single location that can be updated dynamically
 - Share a single transform for the responses and request in a location that can be updated dynamically

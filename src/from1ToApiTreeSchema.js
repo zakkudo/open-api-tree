@@ -1,7 +1,7 @@
 /**
  * @private
  */
-function flatten(tree, models) {
+function flatten(tree = [], models) {
     const flattenedModels = flattenModelInheritance(models);
 
     return flattenTree(tree, flattenedModels);
@@ -112,6 +112,7 @@ function toJsonSchemaProperty(property) {
         required,
         id,
         subTypes,
+        allowMultiple,
         discriminator,
         ...leftover
     } = property;
@@ -185,16 +186,25 @@ function removeResourcePath(resourcePath, path) {
     return path;
 }
 
+function joinPaths(basePath = '', resourcePath) {
+    const sanitizedBasePath = basePath.replace(/[/]+$/, '');
+
+    if (resourcePath) {
+
+        return sanitizedBasePath + resourcePath
+    }
+
+    return sanitizedBasePath;
+}
+
 /**
  * @private
  */
 export default function from1ToApiTreeSchema(schema) {
     const {basePath, resourcePath = '', apis, models = {}} = schema;
-    const base = basePath + resourcePath;
-    const pattern = new RegExp(resourcePath)
 
     return {
-        base,
+        base: joinPaths(basePath, resourcePath),
         tree: flatten(apis, models).reduce((root, api) => {
             const pathname = removeResourcePath(resourcePath, api.path);
             const leaf = ensureTree(root, pathname);
