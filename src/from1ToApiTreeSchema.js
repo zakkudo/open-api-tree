@@ -28,7 +28,7 @@ function flattenModelInheritance(models) {
         delete model.discriminator;
     });
 
-    function merge(model, chain = []) {
+    function merge(model, chain) {
         return chain.reduce((accumulator, c) => {
             const subchain = inherits[c];
 
@@ -163,7 +163,6 @@ function convertAction(pathname, configuration) {
             }
 
             schema.properties.params.properties[p.name] = toJsonSchemaProperty(p);
-            schema.properties.params.type = schema.properties.params.type || 'object';
         }
     });
 

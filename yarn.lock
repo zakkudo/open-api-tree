@@ -523,9 +523,9 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@zakkudo/api-tree@^0.0.17":
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/@zakkudo/api-tree/-/api-tree-0.0.17.tgz#112d0efbe75cfb3848f32b4c68f219481ab04929"
+"@zakkudo/api-tree@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/@zakkudo/api-tree/-/api-tree-0.0.18.tgz#d0d662a58d2cc58fe43fcec0cca95d15fcad84ae"
   dependencies:
     "@zakkudo/fetch" "^0.0.8"
     ajv "^6.5.2"

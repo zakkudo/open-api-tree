@@ -1,13 +1,17 @@
 {
   "name": "@zakkudo/open-api-tree",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Make working with swagger/openapi api trees enjoyable.",
   "keywords": [
     "swagger",
     "openapi",
     "fetch",
-    "validation",
-    "jsonschema"
+    "jsonschema",
+    "api",
+    "ajax",
+    "http",
+    "https",
+    "validation"
   ],
   "main": "index.js",
   "files": [
@@ -32,7 +36,7 @@
     "regenerator-runtime": "^0.12.1"
   },
   "dependencies": {
-    "@zakkudo/api-tree": "^0.0.17"
+    "@zakkudo/api-tree": "^0.0.18"
   },
   "scripts": {
     "build": "scripts/build.sh",
