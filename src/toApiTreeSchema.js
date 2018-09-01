@@ -1,3 +1,4 @@
+import from1ToApiTreeSchema from './from1ToApiTreeSchema';
 import from2ToApiTreeSchema from './from2ToApiTreeSchema';
 import from3ToApiTreeSchema from './from3ToApiTreeSchema';
 
@@ -8,9 +9,11 @@ import from3ToApiTreeSchema from './from3ToApiTreeSchema';
  * @private
  */
 export default function toApiTreeSchema(schema) {
-    if (schema.swagger === '2.0') {
+    if ((schema.swaggerVersion || '').match(/^1\.2$/)) {
+        return from1ToApiTreeSchema(schema);
+    } else if ((schema.swagger || '').match(/^2\.0$/)) {
         return from2ToApiTreeSchema(schema);
-    } else if (schema.openapi === '3.0.0') {
+    } else if ((schema.openapi || '').match(/^3\.0\.[^.]+$/)) {
         return from3ToApiTreeSchema(schema);
     } else {
         throw new Error('Unsupported schema');

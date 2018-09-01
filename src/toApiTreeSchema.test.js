@@ -1,5 +1,7 @@
 import toApiTreeSchema from './toApiTreeSchema';
 import fetch from '@zakkudo/fetch';
+import swagger12Example from './swagger.1.2.example';
+import swagger12Expected from './swagger.1.2.expected';
 import swaggerExample from './swagger.2.0.example';
 import swaggerExpected from './swagger.2.0.expected';
 import openApiExpected from './openapi.3.0.expected';
@@ -11,6 +13,253 @@ describe('toApiTreeSchema', () => {
     beforeEach(() => {
         fetch.mockReset();
         fetch.mockReturnValue(Promise.resolve('test response'));
+    });
+
+    describe('swagger 1.2 schema', () => {
+        it('converts swagger api', () => {
+            expect(toApiTreeSchema(swagger12Example)).toEqual({
+                base: 'http://petstore.swagger.com/api/store',
+                tree: swagger12Expected
+            });
+        });
+
+        it('handles a file up load gracefully', () => {
+            expect(toApiTreeSchema({
+                "swaggerVersion": "1.2",
+                "basePath": "http://petstore.swagger.io",
+                "resourcePath": "/api",
+                "apis": [
+                    {
+                        "path": "/pets",
+                        "operations": [
+                            {
+                                "method": "POST",
+                                "nickname": "findPets",
+                                "parameters": [
+                                    {
+                                        "name": "file",
+                                        "paramType": "formData",
+                                        "description": "file",
+                                        "required": true,
+                                        "type": "file",
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            })).toEqual({
+                "base": "http://petstore.swagger.io/api",
+                "tree": {
+                    "pets": {
+                        "post": [
+                            "/pets",
+                            {
+                                "method": "POST"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
+                                "type": "object",
+                                "properties": {
+                                    "body": {},
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
+        it('ignores missing $refs', () => {
+            expect(toApiTreeSchema({
+                "swaggerVersion": "1.2",
+                "basePath": "http://petstore.swagger.io",
+                "resourcePath": "/api",
+                "apis": [
+                    {
+                        "path": "/pets",
+                        "operations": [
+                            {
+                                "method": "GET",
+                                "nickname": "findPets",
+                                "parameters": [
+                                    {
+                                        "name": "tags",
+                                        "paramType": "query",
+                                        "description": "tags to filter by",
+                                        "required": false,
+                                        "$ref": "Pet",
+                                    },
+                                ],
+                            }
+                        ]
+                    }
+                ]
+            })).toEqual({
+                base: 'http://petstore.swagger.io/api',
+                tree: {
+                    "pets": {
+                        "get": [
+                            "/pets",
+                            {
+                                "method": "GET"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    },
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tags": {
+                                                "description": "tags to filter by",
+                                                "$ref": "Pet"
+                                            }
+                                        },
+                                        "required": [],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
+        it('converts swagger api with no definitions', () => {
+            expect(toApiTreeSchema({
+                "swaggerVersion": "1.2",
+                "basePath": "http://petstore.swagger.io",
+                "resourcePath": "/api",
+                "apis": [
+                    {
+                        "path": "/pets",
+                        "operations": [
+                            {
+                                "method": "GET",
+                                "nickname": "findPets",
+                                "parameters": [
+                                    {
+                                        "name": "tags",
+                                        "paramType": "query",
+                                        "description": "tags to filter by",
+                                        "required": false,
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                ],
+                            }
+                        ]
+                    }
+                ]
+            })).toEqual({
+                base: 'http://petstore.swagger.io/api',
+                tree: {
+                    "pets": {
+                        "get": [
+                            "/pets",
+                            {
+                                "method": "GET"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    },
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tags": {
+                                                "description": "tags to filter by",
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "required": [],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
+        it('converts swagger api with no parameters', () => {
+            expect(toApiTreeSchema({
+                "swaggerVersion": "1.2",
+                "basePath": "http://petstore.swagger.io",
+                "resourcePath": "/api",
+                "apis": [
+                    {
+                    "path": "/pets",
+                        "operations": [
+                            {
+                                "method": "GET",
+                                "nickname": "findPets"
+                            }
+                        ]
+                    }
+                ]
+            })).toEqual({
+                base: 'http://petstore.swagger.io/api',
+                tree: {
+                    "pets": {
+                        "get": [
+                            "/pets",
+                            {
+                                "method": "GET"
+                            },
+                            {
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "title": "findPets",
+                                "type": "object",
+                                "properties": {
+                                    "body": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    },
+                                    "params": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
     });
 
     describe('swagger.2.0 schema', () => {
