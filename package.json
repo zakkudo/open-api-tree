@@ -22,6 +22,7 @@
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.56",
     "@babel/core": "^7.0.0-beta.56",
+    "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.0.0-beta.56",
     "babel-core": "^7.0.0-0",
     "babel-jest": "^23.4.2",
@@ -32,11 +33,11 @@
     "jest": "^23.4.2",
     "jest-cli": "^23.4.2",
     "jsdoc": "^3.5.5",
-    "jsdoc-to-markdown": "^4.0.1",
-    "regenerator-runtime": "^0.12.1"
+    "jsdoc-to-markdown": "^4.0.1"
   },
   "dependencies": {
-    "@zakkudo/api-tree": "^0.0.18"
+    "@babel/runtime-corejs2": "^7.0.0",
+    "@zakkudo/api-tree": "^0.0.19"
   },
   "scripts": {
     "build": "scripts/build.sh",
