@@ -112,6 +112,7 @@ function toJsonSchemaProperty(property) {
         required,
         id,
         subTypes,
+        default: _default,
         allowMultiple,
         discriminator,
         ...leftover
@@ -128,56 +129,70 @@ function toJsonSchemaProperty(property) {
 /**
  * @private
  */
-function convertAction(pathname, configuration) {
+function convertAction(pathname, configuration, include) {
     const method = configuration.method;
-    const schema = {
-        $schema: "http://json-schema.org/draft-07/schema#",
-        title: configuration.nickname,
-        description: configuration.summary,
-        type: 'object',
-        properties: {
-            body: {
-                type: 'object',
-                properties: {},
-                required: [],
-                additionalProperties: false,
-            },
-            params: {
-                type: 'object',
-                properties: {},
-                required: [],
-                additionalProperties: false,
-            },
-        }
-    };
-    const parameters = configuration.parameters || [];
 
-    parameters.forEach((p) => {
-        if (p.paramType === 'body' || p.paramType === 'formData') {
-            schema.properties.body = toJsonSchemaProperty(p);
-            if (p.paramType === 'body') {
-                schema.properties.body.type = schema.properties.body.type || 'object';
+    if (include.validation !== false) {
+        const schema = {
+            $schema: "http://json-schema.org/draft-07/schema#",
+            title: configuration.nickname,
+            description: configuration.summary,
+            type: 'object',
+            properties: {
+                body: {
+                    type: 'object',
+                    properties: {},
+                    required: [],
+                    additionalProperties: false,
+                },
+                params: {
+                    type: 'object',
+                    properties: {},
+                    required: [],
+                    additionalProperties: false,
+                },
             }
-        } else {
-            if (p.required) {
-                schema.properties.params.required.push(p.name);
-            }
+        };
+        const parameters = configuration.parameters || [];
 
-            schema.properties.params.properties[p.name] = toJsonSchemaProperty(p);
-        }
-    });
+        parameters.forEach((p) => {
+            if (p.paramType === 'body' || p.paramType === 'formData') {
+                schema.properties.body = toJsonSchemaProperty(p);
+                if (p.paramType === 'body') {
+                    schema.properties.body.type = schema.properties.body.type || 'object';
+                }
+            } else {
+                if (p.required) {
+                    schema.properties.params.required.push(p.name);
+                }
+
+                schema.properties.params.properties[p.name] = toJsonSchemaProperty(p);
+            }
+        });
+
+        return [
+            convertPathname(pathname),
+            {method: method.toUpperCase()},
+            JSON.parse(JSON.stringify(schema)),
+        ];
+    }
 
     return [
         convertPathname(pathname),
         {method: method.toUpperCase()},
-        JSON.parse(JSON.stringify(schema)),
     ];
 }
 
+/**
+ * @private
+ */
 function isOverload(data) {
     return Array.isArray(data) && Array.isArray(data[0]);
 }
 
+/**
+ * @private
+ */
 function removeResourcePath(resourcePath, path) {
     if (path.startsWith(resourcePath)) {
         return path.slice(resourcePath.length);
@@ -186,6 +201,9 @@ function removeResourcePath(resourcePath, path) {
     return path;
 }
 
+/**
+ * @private
+ */
 function joinPaths(basePath = '', resourcePath) {
     const sanitizedBasePath = basePath.replace(/[/]+$/, '');
 
@@ -200,7 +218,7 @@ function joinPaths(basePath = '', resourcePath) {
 /**
  * @private
  */
-export default function from1ToApiTreeSchema(schema) {
+export default function from1ToApiTreeSchema(schema, include = {}) {
     const {basePath, resourcePath = '', apis, models = {}} = schema;
 
     return {
@@ -211,7 +229,7 @@ export default function from1ToApiTreeSchema(schema) {
 
             api.operations.forEach((o) => {
                 const method = o.method.toLowerCase();
-                const action = convertAction(pathname, o)
+                const action = convertAction(pathname, o, include)
 
                 if (leaf.hasOwnProperty(method)) {
                     if (isOverload(leaf[method])) {

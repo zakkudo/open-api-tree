@@ -1,3 +1,5 @@
+//https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+
 /**
  * @private
  */
@@ -24,6 +26,9 @@ function flatten(tree, definitions) {
 const interpolationPattern = /^\{.+\}$/;
 const interpolationReplacePattern = /\{(.+?)\}/g;
 
+/**
+ * @private
+ */
 function convertPathname(pathname) {
     return pathname.replace(interpolationReplacePattern, (match, capture) => {
         return `:${capture}`;
@@ -79,48 +84,58 @@ function toJsonSchemaProperty(property) {
 /**
  * @private
  */
-function convertAction(pathname, [method, configuration]) {
-    const schema = {
-        $schema: "http://json-schema.org/draft-07/schema#",
-        title: configuration.operationId,
-        description: configuration.description,
-        type: 'object',
-        properties: {
-            body: {
-                type: 'object',
-                properties: {},
-                required: [],
-                additionalProperties: false,
-            },
-            params: {
-                type: 'object',
-                properties: {},
-                required: [],
-                additionalProperties: false,
-            },
-        }
-    };
-    const parameters = configuration.parameters || [];
-
-    parameters.forEach((p) => {
-        if (p.in === 'body' || p.in === 'formData') {
-            schema.properties.body = toJsonSchemaProperty(p);
-        } else {
-            if (p.required) {
-                schema.properties.params.required.push(p.name);
+function convertAction(pathname, [method, configuration], include) {
+    if (include.validation !== false) {
+        const schema = {
+            $schema: "http://json-schema.org/draft-07/schema#",
+            title: configuration.operationId,
+            description: configuration.description,
+            type: 'object',
+            properties: {
+                body: {
+                    type: 'object',
+                    properties: {},
+                    required: [],
+                    additionalProperties: false,
+                },
+                params: {
+                    type: 'object',
+                    properties: {},
+                    required: [],
+                    additionalProperties: false,
+                },
             }
+        };
+        const parameters = configuration.parameters || [];
 
-            schema.properties.params.properties[p.name] = toJsonSchemaProperty(p);
-        }
-    });
+        parameters.forEach((p) => {
+            if (p.in === 'body' || p.in === 'formData') {
+                schema.properties.body = toJsonSchemaProperty(p);
+            } else {
+                if (p.required) {
+                    schema.properties.params.required.push(p.name);
+                }
+
+                schema.properties.params.properties[p.name] = toJsonSchemaProperty(p);
+            }
+        });
+
+        return [
+            convertPathname(pathname),
+            {method: method.toUpperCase()},
+            JSON.parse(JSON.stringify(schema)),
+        ];
+    }
 
     return [
         convertPathname(pathname),
         {method: method.toUpperCase()},
-        JSON.parse(JSON.stringify(schema)),
     ];
 }
 
+/**
+ * @private
+ */
 function isOverload(data) {
     return Array.isArray(data) && Array.isArray(data[0]);
 }
@@ -128,7 +143,7 @@ function isOverload(data) {
 /**
  * @private
  */
-export default function from2ToApiTreeSchema(schema) {
+export default function from2ToApiTreeSchema(schema, include = {}) {
     const {schemes = ['https'], host, basePath, paths, definitions = {}} = schema;
     const base = `${schemes[0]}://${host}${basePath}`;
 
@@ -139,7 +154,7 @@ export default function from2ToApiTreeSchema(schema) {
 
             Object.entries(actions).forEach((entry) => {
                 const method = entry[0];
-                const action = convertAction(pathname, entry)
+                const action = convertAction(pathname, entry, include)
 
                 if (leaf.hasOwnProperty(method)) {
                     if (isOverload(leaf[method])) {
