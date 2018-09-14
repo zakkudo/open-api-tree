@@ -1,6 +1,6 @@
 {
   "name": "@zakkudo/open-api-tree",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Make working with swagger/openapi api trees enjoyable.",
   "keywords": [
     "swagger",
