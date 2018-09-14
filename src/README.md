@@ -112,8 +112,10 @@ api.pets.post({})
 
 // DELETE http://petstore.swagger.io/api/pets/1
 api.pets.delete({params: {id: 1}});
+```
 
-@example <caption>Validation error failure example</caption>
+### Validation error failure example
+``` javascript
 import ValidationError from '@zakkudo/open-api-tree/ValidationError';
 
 api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
@@ -122,9 +124,9 @@ api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
         // ValidationError: [
         //     "<http://petstore.swagger.io/api/pets/:id> .params.id: should be integer"
         // ]
-    } else {
-        throw reason;
     }
+
+    throw reason;
 });
 ```
 
@@ -156,7 +158,7 @@ api.users.get({params: {userId: 'invalid format'}}, false).catch((reason) => {
         console.log(reason.status); // 500
     }
 
-    thow reason;
+    throw reason;
 });
 ```
 
@@ -178,7 +180,7 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
             console.log(reason.status); // 500
         }
 
-        thow reason;
+        throw reason;
     })
 
     // Try using an invalidly formatted id
@@ -187,7 +189,7 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
             console.log(reason.status); // 500
         }
 
-        thow reason;
+        throw reason;
     });
 
     // Skip the validation by passing false to the network call
@@ -196,7 +198,7 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
             console.log(reason.status); // 500
         }
 
-        thow reason;
+        throw reason;
     });
 });
 ```
