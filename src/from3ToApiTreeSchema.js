@@ -46,60 +46,67 @@ function ensureTree(root, pathname) {
 /**
  * @private
  */
-function convertAction(pathname, [method, configuration]) {
-    const schema = {
-        $schema: "http://json-schema.org/draft-07/schema#",
-        title: configuration.operationId,
-        description: configuration.description,
-        type: 'object',
-        properties: {
-            body: {
-                type: 'object',
-                properties: {},
-                required: [],
-                additionalProperties: false,
+function convertAction(pathname, [method, configuration], include) {
+    if (include.validation !== false) {
+        const schema = {
+            $schema: "http://json-schema.org/draft-07/schema#",
+            title: configuration.operationId,
+            description: configuration.description,
+            type: 'object',
+            properties: {
+                body: {
+                    type: 'object',
+                    properties: {},
+                    required: [],
+                    additionalProperties: false,
+                },
+                params: {
+                    type: 'object',
+                    properties: {},
+                    required: [],
+                    additionalProperties: false,
+                },
             },
-            params: {
-                type: 'object',
-                properties: {},
-                required: [],
-                additionalProperties: false,
-            },
-        },
-    };
-    const parameters = configuration.parameters || [];
-    const requestBody = configuration.requestBody || {};
+        };
+        const parameters = configuration.parameters || [];
+        const requestBody = configuration.requestBody || {};
 
-    parameters.forEach((p) => {
-        if (p.required) {
-            schema.properties.params.required.push(p.name);
+        parameters.forEach((p) => {
+            if (p.required) {
+                schema.properties.params.required.push(p.name);
+            }
+
+            schema.properties.params.properties[p.name] = Object.assign({
+                description: p.description
+            }, p.schema);
+        });
+
+        const content = requestBody.content || {};
+        const contentTypes = Object.keys(content);
+        const bodySchemas = Object.values(content).map((c) => c.schema).map((c) => {
+            if (c.properties) {
+                return Object.assign({}, c, {type: 'object'});
+            }
+
+            return c;
+        });
+
+        if (contentTypes.length === 1 && contentTypes[0] === 'application/json') {
+            schema.properties.body = bodySchemas[0];
+        } else if (contentTypes.length > 0) {
+            schema.properties.body = {};
         }
 
-        schema.properties.params.properties[p.name] = Object.assign({
-            description: p.description
-        }, p.schema);
-    });
-
-    const content = requestBody.content || {};
-    const contentTypes = Object.keys(content);
-    const bodySchemas = Object.values(content).map((c) => c.schema).map((c) => {
-        if (c.properties) {
-            return Object.assign({}, c, {type: 'object'});
-        }
-
-        return c;
-    });
-
-    if (contentTypes.length === 1 && contentTypes[0] === 'application/json') {
-        schema.properties.body = bodySchemas[0];
-    } else if (contentTypes.length > 0) {
-        schema.properties.body = {};
+        return [
+            convertPathname(pathname),
+            {method: method.toUpperCase()},
+            JSON.parse(JSON.stringify(schema)),
+        ];
     }
 
     return [
         convertPathname(pathname),
         {method: method.toUpperCase()},
-        JSON.parse(JSON.stringify(schema)),
     ];
 }
 
@@ -110,7 +117,7 @@ function isOverload(data) {
 /**
  * @private
  */
-export default function from3ToApiTreeSchema(schema) {
+export default function from3ToApiTreeSchema(schema, include = {}) {
     const {paths, components = {}} = schema;
     const base = schema.servers[0].url;
 
@@ -122,7 +129,7 @@ export default function from3ToApiTreeSchema(schema) {
 
             Object.entries(actions).forEach((entry) => {
                 const method = entry[0];
-                const action = convertAction(pathname, entry)
+                const action = convertAction(pathname, entry, include)
 
                 if (leaf.hasOwnProperty(method)) {
                     if (isOverload(leaf[method])) {

@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@babel/runtime-corejs2": "^7.0.0",
-    "@zakkudo/api-tree": "^0.0.21"
+    "@zakkudo/api-tree": "^0.0.22"
   },
   "scripts": {
     "build": "scripts/build.sh",

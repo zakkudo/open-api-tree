@@ -24,7 +24,7 @@ Why use this?
 - No longer need to maintain a set of functions for accessing apis
 - Automatic validation of the body/params against the Swagger definition
 - Support for Swagger 1.2, [Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/tree/master/examples/v2.0) and [OpenApi 3.0.x](https://github.com/OAI/OpenAPI-Specification/tree/master/examples/v3.0) definitions
-- Leverages [native fetch](https://developer.mozilla.org/docs/Web/API/Fetch_API/Using_Fetch), adding a thin convenience layer.
+- Leverages [native fetch](https://developer.mozilla.org/docs/Web/API/Fetch_API/Using_Fetch), adding a thin convenience layer in the form of [Fetch Functions](#openapitreefetchfunction--function)
 - Share authorization handling using a single location that can be updated dynamically
 - Share a single transform for the responses and request in a location that can be updated dynamically
 - Supports overloading the tree methods so that you can use the same method for getting a single item or a collection of items
@@ -50,7 +50,7 @@ yarn add @zakkudo/open-api-tree
 
 ## Examples
 
-### Parse a the swagger schema at runtime
+### Parse a swagger schema at runtime
 ``` javascript
 import OpenApiTree from '@zakkudo/open-api-tree';
 import fetch from '@zakkudo/fetch';
@@ -76,7 +76,7 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
 });
 ```
 
-### Parse a the swagger schema at buildtime in [webpack](https://webpack.js.org/)
+### Parse a swagger schema at buildtime in [webpack](https://webpack.js.org/)
 ``` javascript
 //In webpack.conf.js////////////////////////////
 import ApiTree from '@zakkudo/api-tree';
@@ -128,11 +128,41 @@ api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
 });
 ```
 
-### Handling errors
+### Handling validation errors
+``` javascript
+import ValidationError from '@zakkudo/open-api-tree/ValidationError';
+
+// Try fetching without an id
+api.users.get().catch((reason) => {
+    if (reason instanceof ValidationError) {
+        console.log(reason); // "params: should have required property 'userId'
+    }
+
+    throw reason;
+})
+
+// Try using an invalidly formatted id
+api.users.get({params: {userId: 'invalid format'}}).catch((reason) => {
+    if (reason instanceof ValidationError) {
+        console.log(reason); // "params.userId: should match pattern \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\""
+    }
+
+    throw reason;
+});
+
+// Skip the validation by passing false to the network call
+api.users.get({params: {userId: 'invalid format'}}, false).catch((reason) => {
+    if (reason instanceof HttpError) {
+        console.log(reason.status); // 500
+    }
+
+    thow reason;
+});
+```
+
+### Don't include validation schemas in api tree
 ``` javascript
 import OpenApiTree from '@zakkudo/open-api-tree';
-import fetch from '@zakkudo/fetch';
-import ValidationError from '@zakkudo/open-api-tree/ValidationError';
 import HttpError from '@zakkudo/open-api-tree/HttpError';
 
 fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
@@ -140,25 +170,78 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
         headers: {
              'X-AUTH-TOKEN': '1234'
         }
+    }, {validation: false});
+
+    // Try fetching without an id
+    api.users.get().catch((reason) => {
+        if (reason instanceof HttpError) {
+            console.log(reason.status); // 500
+        }
+
+        thow reason;
+    })
+
+    // Try using an invalidly formatted id
+    api.users.get({params: {userId: 'invalid format'}}).catch((reason) => {
+        if (reason instanceof HttpError) {
+            console.log(reason.status); // 500
+        }
+
+        thow reason;
     });
 
-    // GET http://petstore.swagger.io/api/pets?limit=notanumber
-    api.pets.get({params: {limit: 'notanumber'}}).catch((reason) => {
-      if (reason instanceof ValidationError) {
-          console.log(reason); // .params.limit: should be integer
-      }
-    });
+    // Skip the validation by passing false to the network call
+    api.users.get({params: {userId: 'invalid format'}}, false).catch((reason) => {
+        if (reason instanceof HttpError) {
+            console.log(reason.status); // 500
+        }
 
-    // GET http://petstore.swagger.io/api/pets/1
-    api.pets.get({params: {id: 1}}).catch((reason) => {
-      if (reason instanceof HttpError) {
-          if (reason.status === 401) {
-             login();
-          }
-      }
-
-      return reason;
+        thow reason;
     });
+});
+```
+
+### Handling network errors
+``` javascript
+import HttpError from '@zakkudo/open-api-tree/HttpError';
+
+// Force execution with an invalidly formatted id
+api.users.get({params: {userId: 'invalid format'}}, false).catch((reason) => {
+    if (reason instanceof HttpError) {
+        console.log(reason.status); // 500
+        console.log(reason.response); // response body from the server, often json
+    }
+
+    throw reason;
+});
+```
+
+### Overriding options
+``` javascript
+import HttpError from '@zakkudo/open-api-tree/HttpError';
+import ValidationError from '@zakkudo/open-api-tree/ValidationError';
+
+//Set headers after the fact
+api.options.headers['X-AUTH-TOKEN'] = '5678';
+
+//Get 10 users
+api.users.get({params: {limit: 10}}).then((users) => {
+     console.log(users); // [{id: ...}, ...]
+});
+
+//Create a user
+api.users.post({first_name: 'John', last_name: 'Doe'}).then((response) => {
+     console.log(response); // {id: 'ff599c67-1cac-4167-927e-49c02c93625f', first_name: 'John', last_name: 'Doe'}
+});
+
+// Try using a valid id
+api.users.get({params: {userId: 'ff599c67-1cac-4167-927e-49c02c93625f'}}).then((user) => {
+     console.log(user); // {id: 'ff599c67-1cac-4167-927e-49c02c93625f', first_name: 'john', last_name: 'doe'}
+})
+
+// Override the global options at any time
+api.users.get({transformResponse: () => 'something else'}).then((response) => {
+   console.log(response); // 'something else'
 });
 ```
 
@@ -172,20 +255,51 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
 
 **Kind**: Exported class
 
+* [~OpenApiTree](#module_@zakkudo/open-api-tree..OpenApiTree)
+    * [new OpenApiTree(schema, [options], [include])](#new_module_@zakkudo/open-api-tree..OpenApiTree_new)
+    * [~FetchFunction](#module_@zakkudo/open-api-tree..OpenApiTree..FetchFunction) : <code>function</code>
+    * [~Options](#module_@zakkudo/open-api-tree..OpenApiTree..Options) : <code>Object</code>
+
 <a name="new_module_@zakkudo/open-api-tree..OpenApiTree_new"></a>
 
-#### new OpenApiTree(schema, options)
+#### new OpenApiTree(schema, [options], [include])
 **Returns**: <code>Object</code> - The generated api tree  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | schema | <code>Object</code> |  | The swagger/openapi schema, usually accessible from a url path like `v2/swagger.json` where swagger is run |
-| options | <code>Object</code> |  | Options modifying the network call, mostly analogous to fetch |
+| [options] | [<code>Options</code>](#module_@zakkudo/open-api-tree..OpenApiTree..Options) |  | Options modifying the network call, mostly analogous to fetch |
+| [include] | <code>Object</code> |  | Modifiers for the conversion of the swagger schema to an api tree schema |
+| [include.validation] | <code>Boolean</code> | <code>true</code> | Set to false to not include json schemas for client side validation of api requests |
+
+<a name="module_@zakkudo/open-api-tree..OpenApiTree..FetchFunction"></a>
+
+#### OpenApiTree~FetchFunction : <code>function</code>
+Executes the network request using the api tree configuration. Generated from the triplets of the form
+`[url, options, jsonschema]` where only url is required.
+
+**Kind**: inner typedef of [<code>OpenApiTree</code>](#module_@zakkudo/open-api-tree..OpenApiTree)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| [options] | [<code>Options</code>](#module_@zakkudo/open-api-tree..OpenApiTree..Options) |  | The override options for the final network call |
+| [validate] | <code>Boolean</code> | <code>true</code> | Set to false to force validation to be skipped, even if there is a schema |
+
+<a name="module_@zakkudo/open-api-tree..OpenApiTree..Options"></a>
+
+#### OpenApiTree~Options : <code>Object</code>
+Options modifying the network call, mostly analogous to fetch
+
+**Kind**: inner typedef of [<code>OpenApiTree</code>](#module_@zakkudo/open-api-tree..OpenApiTree)  
+**Properties**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
 | [options.method] | <code>String</code> | <code>&#x27;GET&#x27;</code> | GET, POST, PUT, DELETE, etc. |
 | [options.mode] | <code>String</code> | <code>&#x27;same-origin&#x27;</code> | no-cors, cors, same-origin |
 | [options.cache] | <code>String</code> | <code>&#x27;default&#x27;</code> | default, no-cache, reload, force-cache, only-if-cached |
 | [options.credentials] | <code>String</code> | <code>&#x27;omit&#x27;</code> | include, same-origin, omit |
-| options.headers | <code>String</code> |  | "application/json; charset=utf-8". |
+| [options.headers] | <code>String</code> |  | "application/json; charset=utf-8". |
 | [options.redirect] | <code>String</code> | <code>&#x27;follow&#x27;</code> | manual, follow, error |
 | [options.referrer] | <code>String</code> | <code>&#x27;client&#x27;</code> | no-referrer, client |
 | [options.body] | <code>String</code> \| <code>Object</code> |  | `JSON.stringify` is automatically run for non-string types |
@@ -198,7 +312,7 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
 
 <a name="module_@zakkudo/open-api-tree/toApiTreeSchema..toApiTreeSchema"></a>
 
-### @zakkudo/open-api-tree/toApiTreeSchema~toApiTreeSchema(schema) ⇒ <code>Object</code> ⏏
+### @zakkudo/open-api-tree/toApiTreeSchema~toApiTreeSchema(schema, [include]) ⇒ <code>Object</code> ⏏
 Converts an open-api/swagger schema to an api tree configuration.
 
 **Kind**: Exported function
@@ -208,9 +322,11 @@ Converts an open-api/swagger schema to an api tree configuration.
 
 - <code>Error</code> when trying to convert an unsupported schema
 
-| Param | Type | Description |
-| --- | --- | --- |
-| schema | <code>Object</code> | The schema as such that comes from `swagger.json` |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| schema | <code>Object</code> |  | The schema as such that comes from `swagger.json` |
+| [include] | <code>Object</code> |  | Modifiers for the conversion of the swagger schema to an api tree schema |
+| [include.validation] | <code>Boolean</code> | <code>true</code> | Set to false to not include json schemas for client side validation of api requests |
 
 <a name="module_@zakkudo/open-api-tree/ValidationError"></a>
 

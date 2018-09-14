@@ -24,7 +24,7 @@ Why use this?
 - No longer need to maintain a set of functions for accessing apis
 - Automatic validation of the body/params against the Swagger definition
 - Support for Swagger 1.2, [Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/tree/master/examples/v2.0) and [OpenApi 3.0.x](https://github.com/OAI/OpenAPI-Specification/tree/master/examples/v3.0) definitions
-- Leverages [native fetch](https://developer.mozilla.org/docs/Web/API/Fetch_API/Using_Fetch), adding a thin convenience layer.
+- Leverages [native fetch](https://developer.mozilla.org/docs/Web/API/Fetch_API/Using_Fetch), adding a thin convenience layer in the form of [Fetch Functions](#openapitreefetchfunction--function)
 - Share authorization handling using a single location that can be updated dynamically
 - Share a single transform for the responses and request in a location that can be updated dynamically
 - Supports overloading the tree methods so that you can use the same method for getting a single item or a collection of items
@@ -50,7 +50,7 @@ yarn add @zakkudo/open-api-tree
 
 ## Examples
 
-### Parse a the swagger schema at runtime
+### Parse a swagger schema at runtime
 ``` javascript
 import OpenApiTree from '@zakkudo/open-api-tree';
 import fetch from '@zakkudo/fetch';
@@ -76,7 +76,7 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
 });
 ```
 
-### Parse a the swagger schema at buildtime in [webpack](https://webpack.js.org/)
+### Parse a swagger schema at buildtime in [webpack](https://webpack.js.org/)
 ``` javascript
 //In webpack.conf.js////////////////////////////
 import ApiTree from '@zakkudo/api-tree';
@@ -128,11 +128,41 @@ api.pets.get({params: {id: 'lollipops'}}).catch((reason) => {
 });
 ```
 
-### Handling errors
+### Handling validation errors
+``` javascript
+import ValidationError from '@zakkudo/open-api-tree/ValidationError';
+
+// Try fetching without an id
+api.users.get().catch((reason) => {
+    if (reason instanceof ValidationError) {
+        console.log(reason); // "params: should have required property 'userId'
+    }
+
+    throw reason;
+})
+
+// Try using an invalidly formatted id
+api.users.get({params: {userId: 'invalid format'}}).catch((reason) => {
+    if (reason instanceof ValidationError) {
+        console.log(reason); // "params.userId: should match pattern \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\""
+    }
+
+    throw reason;
+});
+
+// Skip the validation by passing false to the network call
+api.users.get({params: {userId: 'invalid format'}}, false).catch((reason) => {
+    if (reason instanceof HttpError) {
+        console.log(reason.status); // 500
+    }
+
+    thow reason;
+});
+```
+
+### Don't include validation schemas in api tree
 ``` javascript
 import OpenApiTree from '@zakkudo/open-api-tree';
-import fetch from '@zakkudo/fetch';
-import ValidationError from '@zakkudo/open-api-tree/ValidationError';
 import HttpError from '@zakkudo/open-api-tree/HttpError';
 
 fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
@@ -140,25 +170,79 @@ fetch('https://petstore.swagger.io/v2/swagger.json').then((configuration) => {
         headers: {
              'X-AUTH-TOKEN': '1234'
         }
+    }, {validation: false});
+
+    // Try fetching without an id
+    api.users.get().catch((reason) => {
+        if (reason instanceof HttpError) {
+            console.log(reason.status); // 500
+        }
+
+        thow reason;
+    })
+
+    // Try using an invalidly formatted id
+    api.users.get({params: {userId: 'invalid format'}}).catch((reason) => {
+        if (reason instanceof HttpError) {
+            console.log(reason.status); // 500
+        }
+
+        thow reason;
     });
 
-    // GET http://petstore.swagger.io/api/pets?limit=notanumber
-    api.pets.get({params: {limit: 'notanumber'}}).catch((reason) => {
-      if (reason instanceof ValidationError) {
-          console.log(reason); // .params.limit: should be integer
-      }
-    });
+    // Skip the validation by passing false to the network call
+    api.users.get({params: {userId: 'invalid format'}}, false).catch((reason) => {
+        if (reason instanceof HttpError) {
+            console.log(reason.status); // 500
+        }
 
-    // GET http://petstore.swagger.io/api/pets/1
-    api.pets.get({params: {id: 1}}).catch((reason) => {
-      if (reason instanceof HttpError) {
-          if (reason.status === 401) {
-             login();
-          }
-      }
-
-      return reason;
+        thow reason;
     });
+});
+```
+
+### Handling network errors
+``` javascript
+import HttpError from '@zakkudo/open-api-tree/HttpError';
+
+// Force execution with an invalidly formatted id
+api.users.get({params: {userId: 'invalid format'}}, false).catch((reason) => {
+    if (reason instanceof HttpError) {
+        console.log(reason.status); // 500
+        console.log(reason.response); // response body from the server, often json
+    }
+
+    throw reason;
+});
+```
+
+### Overriding options
+``` javascript
+import HttpError from '@zakkudo/open-api-tree/HttpError';
+import ValidationError from '@zakkudo/open-api-tree/ValidationError';
+
+
+//Set headers after the fact
+api.options.headers['X-AUTH-TOKEN'] = '5678';
+
+//Get 10 users
+api.users.get({params: {limit: 10}}).then((users) => {
+     console.log(users); // [{id: ...}, ...]
+});
+
+//Create a user
+api.users.post({first_name: 'John', last_name: 'Doe'}).then((response) => {
+     console.log(response); // {id: 'ff599c67-1cac-4167-927e-49c02c93625f', first_name: 'John', last_name: 'Doe'}
+});
+
+// Try using a valid id
+api.users.get({params: {userId: 'ff599c67-1cac-4167-927e-49c02c93625f'}}).then((user) => {
+     console.log(user); // {id: 'ff599c67-1cac-4167-927e-49c02c93625f', first_name: 'john', last_name: 'doe'}
+})
+
+// Override the global options at any time
+api.users.get({transformResponse: () => 'something else'}).then((response) => {
+   console.log(response); // 'something else'
 });
 ```
 
