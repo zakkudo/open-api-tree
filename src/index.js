@@ -24,6 +24,7 @@
  * @property {String|Object} [options.params] - Query params to be appended to
  * the url. The url must not already have params.  The serialization uses the
  * same rules as used by `@zakkudo/query-string`
+ * @property {Boolean} [options.unsafe] - Disable escaping of params in the url
  * @property {Function|Array<Function>} [options.transformRequest] - Transforms for the request body.
  * When not supplied, it by default json serializes the contents if not a simple string. Also accepts
  * promises as return values for asynchronous work.
