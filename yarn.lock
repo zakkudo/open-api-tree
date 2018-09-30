@@ -556,34 +556,34 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@zakkudo/api-tree@^0.0.24":
-  version "0.0.24"
-  resolved "https://registry.yarnpkg.com/@zakkudo/api-tree/-/api-tree-0.0.24.tgz#a9031ddac23598e8a88ad0fc14fa961d78696001"
+"@zakkudo/api-tree@^0.0.25":
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/@zakkudo/api-tree/-/api-tree-0.0.25.tgz#15b2ce100a296db669422f0d36cda069eb1adb23"
   dependencies:
     "@babel/runtime-corejs2" "^7.0.0"
-    "@zakkudo/fetch" "^0.0.13"
+    "@zakkudo/fetch" "^0.0.14"
     ajv "^6.5.2"
 
-"@zakkudo/fetch@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@zakkudo/fetch/-/fetch-0.0.13.tgz#85e2f28c3161ce833601e88e5ed7a5f8c2d80203"
+"@zakkudo/fetch@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@zakkudo/fetch/-/fetch-0.0.14.tgz#7395777b683c67fc76a73d4c579e5f1511d1292d"
   dependencies:
     "@babel/runtime-corejs2" "^7.0.0"
-    "@zakkudo/url" "^0.0.16"
+    "@zakkudo/url" "^0.0.17"
     immutable "^3.8.2"
 
-"@zakkudo/query-string@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@zakkudo/query-string/-/query-string-0.0.14.tgz#4923d74dbf4366537453886d071ba3e91c63c6b9"
+"@zakkudo/query-string@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@zakkudo/query-string/-/query-string-0.0.15.tgz#716e9125dadc32d3793f6213c7288f085c39314d"
   dependencies:
     "@babel/runtime-corejs2" "^7.0.0"
 
-"@zakkudo/url@^0.0.16":
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/@zakkudo/url/-/url-0.0.16.tgz#86ad93f3544bd60dff0ca0311f3a317c38b85774"
+"@zakkudo/url@^0.0.17":
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/@zakkudo/url/-/url-0.0.17.tgz#2d0beeef2848add9a9fa469f4c8070800845b6d0"
   dependencies:
     "@babel/runtime-corejs2" "^7.0.0"
-    "@zakkudo/query-string" "^0.0.14"
+    "@zakkudo/query-string" "^0.0.15"
 
 abab@^1.0.4:
   version "1.0.4"
