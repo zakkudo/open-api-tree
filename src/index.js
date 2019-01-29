@@ -42,21 +42,21 @@ import toApiTreeSchema from './toApiTreeSchema';
 import ApiTree from '@zakkudo/api-tree';
 
 class OpenApiTree {
-    /**
-     * @param {Object} schema - The swagger/openapi schema, usually accessible
-     * from a url path like `v2/swagger.json` where swagger is run
-     * @param {module:@zakkudo/open-api-tree~OpenApiTree~Options} [options] - Options
-     * modifying the network call, mostly analogous to fetch
-     * @param {Object} [include] - Modifiers for the conversion of the swagger schema to an api tree schema
-     * @param {Boolean} [include.validation = true] - Set to false to not
-     * include json schemas for client side validation of api requests
-     * @return {Object} The generated api tree
-     */
-    constructor(schema, options, include) {
-        const {base, tree} = toApiTreeSchema(schema, include);
+  /**
+   * @param {Object} schema - The swagger/openapi schema, usually accessible
+   * from a url path like `v2/swagger.json` where swagger is run
+   * @param {module:@zakkudo/open-api-tree~OpenApiTree~Options} [options] - Options
+   * modifying the network call, mostly analogous to fetch
+   * @param {Object} [include] - Modifiers for the conversion of the swagger schema to an api tree schema
+   * @param {Boolean} [include.validation = true] - Set to false to not
+   * include json schemas for client side validation of api requests
+   * @return {Object} The generated api tree
+   */
+  constructor(schema, options, include) {
+    const {base, tree} = toApiTreeSchema(schema, include);
 
-        return new ApiTree(base, tree, options);
-    }
+    return new ApiTree(base, tree, options);
+  }
 }
 
 export default OpenApiTree;

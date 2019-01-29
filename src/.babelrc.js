@@ -13,6 +13,7 @@ module.exports = {
     ],
     "plugins": [
         ["@babel/transform-runtime", {"corejs": 2}],
+        "@babel/transform-classes",
         "transform-undefined-to-void"
     ],
     minified: false, // When enabled, makes debuggers confused even with source maps

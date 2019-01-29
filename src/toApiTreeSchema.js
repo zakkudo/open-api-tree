@@ -16,15 +16,15 @@ import from3ToApiTreeSchema from './from3ToApiTreeSchema';
  * @throws {Error} when trying to convert an unsupported schema
  */
 function toApiTreeSchema(schema, include) {
-    if ((schema.swaggerVersion || '').match(/^1\.2$/)) {
-        return from1ToApiTreeSchema(schema, include);
-    } else if ((schema.swagger || '').match(/^2\.0$/)) {
-        return from2ToApiTreeSchema(schema, include);
-    } else if ((schema.openapi || '').match(/^3\.0\.[^.]+$/)) {
-        return from3ToApiTreeSchema(schema, include);
-    } else {
-        throw new Error('Unsupported schema');
-    }
+  if ((schema.swaggerVersion || '').match(/^1\.2$/)) {
+    return from1ToApiTreeSchema(schema, include);
+  } else if ((schema.swagger || '').match(/^2\.0$/)) {
+    return from2ToApiTreeSchema(schema, include);
+  } else if ((schema.openapi || '').match(/^3\.0\.[^.]+$/)) {
+    return from3ToApiTreeSchema(schema, include);
+  } else {
+    throw new Error('Unsupported schema');
+  }
 }
 
 export default toApiTreeSchema;
