@@ -1,16 +1,42 @@
 {
-	"pets": {
-		"get": [
-			[
-				"/pets",
-				{
-					"method": "GET"
-				},
-				{
-					"$schema": "http://json-schema.org/draft-07/schema#",
-					"title": "findPets",
-					"description": "Returns all pets from the system that the user has access to\nNam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.\nSed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.\n",
-					"type": "object",
+    "pets": {
+        "bulk": {
+            "post": [
+                "/pets/bulk",
+                {
+                    "headers": {
+                        "Content-Type": "multipart/form-data"
+                    },
+                    "method": "POST"
+                },
+                {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "description": "Creates a new pet in the store.  Duplicates are allowed",
+                    "properties": {
+                        "body": {},
+                        "params": {
+                            "additionalProperties": false,
+                            "properties": {},
+                            "required": [],
+                            "type": "object"
+                        }
+                    },
+                    "title": "bulkAddPet",
+                    "type": "object"
+                }
+            ]
+        },
+        "get": [
+            [
+                "/pets",
+                {
+                    "method": "GET"
+                },
+                {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "findPets",
+                    "description": "Returns all pets from the system that the user has access to\nNam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.\nSed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.\n",
+                    "type": "object",
                     "properties": {
                         "body": {
                             "type": "object",
@@ -38,18 +64,18 @@
                             "additionalProperties": false
                         }
                     }
-				}
-			],
-			[
-				"/pets/:id",
-				{
-					"method": "GET"
-				},
-				{
-					"$schema": "http://json-schema.org/draft-07/schema#",
-					"title": "find pet by id",
-					"description": "Returns a user based on a single ID, if the user does not have access to the pet",
-					"type": "object",
+                }
+            ],
+            [
+                "/pets/:id",
+                {
+                    "method": "GET"
+                },
+                {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "find pet by id",
+                    "description": "Returns a user based on a single ID, if the user does not have access to the pet",
+                    "type": "object",
                     "properties": {
                         "body": {
                             "type": "object",
@@ -72,18 +98,18 @@
                             "additionalProperties": false
                         }
                     }
-				}
-			],
-			[
-				"/pets/:otherId",
-				{
-					"method": "GET"
-				},
-				{
-					"$schema": "http://json-schema.org/draft-07/schema#",
-					"title": "find pet by id in another format",
-					"description": "extra overload test",
-					"type": "object",
+                }
+            ],
+            [
+                "/pets/:otherId",
+                {
+                    "method": "GET"
+                },
+                {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "find pet by id in another format",
+                    "description": "extra overload test",
+                    "type": "object",
                     "properties": {
                         "body": {
                             "type": "object",
@@ -98,19 +124,22 @@
                             "additionalProperties": false
                         }
                     }
-				}
-			]
-		],
-		"post": [
-			"/pets",
-			{
-				"method": "POST"
-			},
-			{
-				"$schema": "http://json-schema.org/draft-07/schema#",
-				"title": "addPet",
-				"description": "Creates a new pet in the store.  Duplicates are allowed",
-				"type": "object",
+                }
+            ]
+        ],
+        "post": [
+            "/pets",
+            {
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "method": "POST"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "title": "addPet",
+                "description": "Creates a new pet in the store.  Duplicates are allowed",
+                "type": "object",
                 "properties": {
                     "body": {
                         "required": [
@@ -133,18 +162,18 @@
                         "additionalProperties": false
                     }
                 }
-			}
-		],
-		"delete": [
-			"/pets/:id",
-			{
-				"method": "DELETE"
-			},
-			{
-				"$schema": "http://json-schema.org/draft-07/schema#",
-				"title": "deletePet",
-				"description": "deletes a single pet based on the ID supplied",
-				"type": "object",
+            }
+        ],
+        "delete": [
+            "/pets/:id",
+            {
+                "method": "DELETE"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "title": "deletePet",
+                "description": "deletes a single pet based on the ID supplied",
+                "type": "object",
                 "properties": {
                     "body": {
                         "type": "object",
@@ -167,19 +196,22 @@
                         "additionalProperties": false
                     }
                 }
-			}
-		],
-		"overloadedRequestBodys": {
-			"post": [
-				"/pets/overloadedRequestBodys",
-				{
-					"method": "POST"
-				},
-				{
-					"$schema": "http://json-schema.org/draft-07/schema#",
-					"title": "find pet by id in another format",
-					"description": "extra overload test",
-					"type": "object",
+            }
+        ],
+        "overloadedRequestBodys": {
+            "post": [
+                "/pets/overloadedRequestBodys",
+                {
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "method": "POST"
+                },
+                {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "find pet by id in another format",
+                    "description": "extra overload test",
+                    "type": "object",
                     "properties": {
                         "body": {
                             "required": [
@@ -202,8 +234,8 @@
                             "additionalProperties": false
                         }
                     }
-				}
-			]
-		}
-	}
+                }
+            ]
+        }
+    }
 }
