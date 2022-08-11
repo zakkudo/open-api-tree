@@ -51,22 +51,26 @@ function flattenModelInheritance(models) {
 /**
  * @private
  */
-function flattenTree(tree, models) {
-  if (Array.isArray(tree)) {
-    return tree.map((t) => flattenTree(t, models));
-  } else if (Object(tree) === tree) {
-    return Object.entries(tree).reduce((accumulator, [k, v]) => {
-      if (k === '$ref' || k === 'type') {
-        if (models.hasOwnProperty(v)) {
-          return Object.assign(accumulator, flattenTree(models[v], models));
-        }
-      }
+function flattenTree(tree, models, _refs = null) {
+	if(!_refs) // detect circular reference
+		_refs = new WeakSet();
 
-      return Object.assign(accumulator, {[k]: flattenTree(v, models)});
-    }, {});
-  }
+	if (Array.isArray(tree)) {
+		return tree.map((t) => flattenTree(t, models));
+	} else if (Object(tree) === tree) {
+		return Object.entries(tree).reduce((accumulator, [k, v]) => {
+			if (k === '$ref' || k === 'type' || k === 'responseModel') {
+				const model = models[v];
+				if (models.hasOwnProperty(v) && !_refs.has(model)) {
+					_refs.add(model);
+					return Object.assign(accumulator, flattenTree(model, models, _refs));
+				}
+			}
+			return Object.assign(accumulator, { [k]: flattenTree(v, models, _refs) });
+		}, {});
+	}
 
-  return tree;
+	return tree;
 }
 
 const interpolationPattern = /^\{.+\}$/;
