@@ -3,24 +3,29 @@
 /**
  * @private
  */
-function flatten(tree, definitions) {
-  if (Array.isArray(tree)) {
-    return tree.map((t) => flatten(t, definitions));
-  } else if (Object(tree) === tree) {
-    return Object.entries(tree).reduce((accumulator, [k, v]) => {
-      if (k === '$ref') {
-        const key = v.split('/').slice(-1);
+function flatten(tree, definitions, _refs = null) {
+	if(!_refs) // detect circular reference
+		_refs = new WeakSet();
 
-        if (definitions.hasOwnProperty(key)) {
-          return Object.assign(accumulator, flatten(definitions[key], definitions));
-        }
-      }
+	if (Array.isArray(tree)) {
+		return tree.map(t => flatten(t, definitions));
+	} else if (Object(tree) === tree) {
+		return Object.entries(tree).reduce((accumulator, [k, v]) => {
+			if (k === '$ref') {
+				const key = v.split('/').slice(-1);
+				const model = definitions[key];
 
-      return Object.assign(accumulator, {[k]: flatten(v, definitions)});
-    }, {});
-  }
+				if (definitions.hasOwnProperty(key) && !_refs.has(model)) {
+					_refs.add(model);
+					return Object.assign(accumulator, flatten(model, definitions, _refs));
+				}
+			}
 
-  return tree;
+			return Object.assign(accumulator, { [k]: flatten(v, definitions, _refs) });
+		}, {});
+	}
+
+	return tree;
 }
 
 const interpolationPattern = /^\{.+\}$/;
